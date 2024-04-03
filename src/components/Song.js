@@ -29,6 +29,7 @@ const updateEscuchas = async(song_name, song_author) => {
         song: song_name,
         author: song_author,
         reproductions: numberReproductions,
+        date: new Date(year, month - 1, day)
     });
 
 }
@@ -59,10 +60,10 @@ const handlePrev = (currentSong, setCurrentSong, audioRef) => {
     }
 }
 
-const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repeat) => {
+const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef) => {
 
     if (!repeat){
-        handleNext(currentSong, setCurrentSong)
+        handleNext(currentSong, setCurrentSong, audioRef)
     }else{
         e.target.play()
 
@@ -104,7 +105,7 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
             </div>
             <div id = {"controlSongDiv"}>
                 <BiSkipPreviousCircle size = {42} className="skipButton skipPrevious" onClick={() => handlePrev(currentSong, setCurrentSong, audioRef)}></BiSkipPreviousCircle>
-                <audio ref={audioRef}  key = {currentSong.url} controls="controls" autoPlay onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
+                <audio ref={audioRef}  key = {currentSong.url} controls="controls" autoPlay onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
                 <BiSkipNextCircle size = {42} className="skipButton skipNext" onClick={(e) => handleNext(currentSong, setCurrentSong, audioRef)}></BiSkipNextCircle>
             </div>
 
