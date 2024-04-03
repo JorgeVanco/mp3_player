@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 
 const handleSelect = (cancion, isSelected, setIsSelected, cancionesSeleccionadas, setCancionesSeleccionadas) => {
-    console.log(cancionesSeleccionadas)
     const newIsSelected = !isSelected
     setIsSelected(newIsSelected)
     let newList = []

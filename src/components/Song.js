@@ -83,7 +83,7 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
     const audioRef = useRef(null);
-
+    
     useEffect(() => {
         if (repeatState > 0){
             setRepeat(true)
