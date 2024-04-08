@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "prueba-audio-494e7"
-  }
+  },
+  "targets": {
+    "prueba-audio-494e7": {
+      "hosting": {
+        "spotty-joly": [
+          "spotty-joly"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -15,6 +15,7 @@
   },
   "hosting": {
     "public": "build",
+    "target": "spotty-joly",
     "ignore": [
       "firebase.json",
       "**/.*",

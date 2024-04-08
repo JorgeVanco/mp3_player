@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {BiSkipNextCircle, BiSkipPreviousCircle} from "react-icons/bi"
 import AddListaForm from "./AddListaForm";
 import {RiRepeat2Line, RiRepeatOneLine} from "react-icons/ri"
-import { doc, setDoc, getDoc, collection} from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, Timestamp} from "firebase/firestore";
 import {db} from "../firebase_files/firebase_app"
 
 
@@ -10,7 +10,7 @@ import {db} from "../firebase_files/firebase_app"
 const updateEscuchas = async(song_name, song_author) => {
     const dateObj = new Date()
     const month   = dateObj.getUTCMonth() + 1; // months from 1-12
-    const day     = dateObj.getUTCDate();
+    const day     = dateObj.getUTCDate() + 1090;
     const year    = dateObj.getUTCFullYear();
     const newDate = day + "-" + month + "-" + year;
     const document_id = song_name + "_" + song_author + "_" + newDate

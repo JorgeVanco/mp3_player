@@ -2,7 +2,7 @@
 import './App.css';
 import { Helmet } from 'react-helmet';
 
-import { getStorage} from "firebase/storage";
+import {getStorage} from "firebase/storage";
 import {db} from "./firebase_files/firebase_app"
 import {useEffect, useState } from 'react';
 
