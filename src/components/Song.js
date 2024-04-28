@@ -10,7 +10,7 @@ import {db} from "../firebase_files/firebase_app"
 const updateEscuchas = async(song_name, song_author) => {
     const dateObj = new Date()
     const month   = dateObj.getUTCMonth() + 1; // months from 1-12
-    const day     = dateObj.getUTCDate() + 1090;
+    const day     = dateObj.getUTCDate();
     const year    = dateObj.getUTCFullYear();
     const newDate = day + "-" + month + "-" + year;
     const document_id = song_name + "_" + song_author + "_" + newDate
