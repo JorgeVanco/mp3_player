@@ -4,6 +4,7 @@ import {doc, setDoc } from "firebase/firestore";
 
 const anadirCancionLista = async(db, songsToAdd, nodeConverter, listaElegida) => {
     songsToAdd.forEach(async(song) => {
+        console.log(song)
         const ref = doc(db, listaElegida, song.name).withConverter(nodeConverter);
         await setDoc(ref, song);
     });
@@ -42,27 +43,29 @@ const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setLi
     }else{
         listaElegidaAnadir = listaElegida
     }
-    anadirCancionLista(db, songsToAdd, nodeConverter, listaElegidaAnadir)
-
-    addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
-        setListaElegida("")
-        setNombreListaNueva("")
-        setListForm(false)
-        
-        if(setAbrir){
-            setAbrir(false)
-        }
-        if(setHacerGrande){
-            setHacerGrande(false)
-        }
-        if (setCancionesSeleccionadas !== null){
-            setCancionesSeleccionadas([])
-        }
-        if (setSearchWord){
-            setSearchWord("")
-        }
-        window.location.reload()
+    anadirCancionLista(db, songsToAdd, nodeConverter, listaElegidaAnadir).then(() => {
+        addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
+            setListaElegida("")
+            setNombreListaNueva("")
+            setListForm(false)
+            
+            if(setAbrir){
+                setAbrir(false)
+            }
+            if(setHacerGrande){
+                setHacerGrande(false)
+            }
+            if (setCancionesSeleccionadas !== null){
+                setCancionesSeleccionadas([])
+            }
+            if (setSearchWord){
+                setSearchWord("")
+            }
+            window.location.reload()
+        })
     })
+
+    
 
     
 }
