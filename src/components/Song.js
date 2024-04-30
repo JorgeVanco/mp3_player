@@ -79,7 +79,7 @@ const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repea
 
 }
 
-const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas}) => {
+const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
@@ -109,7 +109,7 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
                 <BiSkipNextCircle size = {42} className="skipButton skipNext" onClick={(e) => handleNext(currentSong, setCurrentSong, audioRef)}></BiSkipNextCircle>
             </div>
 
-            <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande}></AddListaForm>
+            <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
 
             {
                 repeatState === 2 ? <RiRepeatOneLine size={28} className="repeatIcon" onClick={() => setRepeatState((repeatState + 1) % 3)} style={{color:"green"}}></RiRepeatOneLine>:

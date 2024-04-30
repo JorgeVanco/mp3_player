@@ -4,9 +4,10 @@ import {doc, setDoc } from "firebase/firestore";
 
 const anadirCancionLista = async(db, songsToAdd, nodeConverter, listaElegida) => {
     songsToAdd.forEach(async(song) => {
-        console.log(song)
+        
         const ref = doc(db, listaElegida, song.name).withConverter(nodeConverter);
         await setDoc(ref, song);
+        console.log(song)
     });
     
 }
@@ -30,7 +31,7 @@ const addListToListsDoc = async(listas, setListas, db, listaElegida) => {
     }
 }
 
-const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord) => {
+const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload) => {
     e.preventDefault()
 
     if (!listaElegida || (listaElegida === "input" && !nombreListaNueva)){
@@ -43,27 +44,29 @@ const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setLi
     }else{
         listaElegidaAnadir = listaElegida
     }
-    anadirCancionLista(db, songsToAdd, nodeConverter, listaElegidaAnadir).then(() => {
-        addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
-            setListaElegida("")
-            setNombreListaNueva("")
-            setListForm(false)
-            
-            if(setAbrir){
-                setAbrir(false)
-            }
-            if(setHacerGrande){
-                setHacerGrande(false)
-            }
-            if (setCancionesSeleccionadas !== null){
-                setCancionesSeleccionadas([])
-            }
-            if (setSearchWord){
-                setSearchWord("")
-            }
-            window.location.reload()
-        })
+    anadirCancionLista(db, songsToAdd, nodeConverter, listaElegidaAnadir)
+    addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
+        setListaElegida("")
+        setNombreListaNueva("")
+        setListForm(false)
+        
+        if(setAbrir){
+            setAbrir(false)
+        }
+        if(setHacerGrande){
+            setHacerGrande(false)
+        }
+        if (setCancionesSeleccionadas !== null){
+            setCancionesSeleccionadas([])
+        }
+        if (setSearchWord){
+            setSearchWord("")
+        }
+        // window.location.reload()
+        setReload(true)
     })
+
+
 
     
 
@@ -75,12 +78,11 @@ const handleCancel = (setListForm, setListaElegida, setNombreListaNueva, setHace
     setListaElegida("")
     setNombreListaNueva("")
     if(setHacerGrande){
-
         setHacerGrande(false)
     }
 }
 
-const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setAbrir = null, setHacerGrande = null, setSearchWord = null}) => {
+const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, setAbrir = null, setHacerGrande = null, setSearchWord = null}) => {
     const [listForm, setListForm] = useState(false)
     const [listaElegida, setListaElegida] = useState("")
     const [nombreListaNueva, setNombreListaNueva] = useState("")
@@ -105,7 +107,7 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
     {listForm ? 
         <div className="blockingDiv">
             
-            <form id = "addListaForm" onSubmit={(e) => handleSubmit(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord)}>
+            <form id = "addListaForm" onSubmit={(e) => handleSubmit(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload)}>
                 <input type='text' placeholder='Crear una nueva lista' className={nombreListaNueva && listaElegida === "input" ? "listaAnadirSeleccionada" : null} value = {nombreListaNueva} onClick={() => setListaElegida("input")} onChange={(e) => setNombreListaNueva(e.target.value)}></input>
                 <div id={"formListsDiv"} style={{height: height.toString() + "em"}}>
                     {listForm && listas ? listas.map((lista, index)=> {

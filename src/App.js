@@ -9,7 +9,6 @@ import {useEffect, useState } from 'react';
 import Song from "./components/Song.js"
 import getAllSongs from "./functions/getAllSongs"
 import {LinkedList, Node, nodeConverter} from "./classes/LinkedList"
-import AddListaForm from './components/AddListaForm';
 import SelectListaComponent from './components/SelectListaComponent';
 import MostrarCancionesComponent from './components/MostrarCancionesComponent';
 import Busqueda from './components/Busqueda';
@@ -23,10 +22,12 @@ function App() {
   const [songList, setSongList] = useState(new LinkedList())
   const storage = getStorage();
   const [title, setTitle] = useState("Escucha música")
+  const [reload, setReload] = useState(false)
 
   useEffect(()=>{
+    console.log("Reloading")
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
-  }, [])
+  }, [reload])
 
   useEffect(()=> {
     setCurrentSong(songList.head)
@@ -49,7 +50,7 @@ function App() {
         </Helmet>
       <header className="App-header" style={{minHeight:window.innerHeight.toString() + "px"}}>
 
-        <Busqueda canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null}></Busqueda>
+        <Busqueda canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
 
         {/* <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -64,12 +65,12 @@ function App() {
           Learn React
         </a> */}
 
-        <MostrarCancionesComponent todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong}></MostrarCancionesComponent>
+        <MostrarCancionesComponent todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
 
         <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>
         <SelectListaComponent listas = {listas} setSongList = {setSongList} setListaActual = {setListaActual}></SelectListaComponent>
 
-        <Song key = {currentSong ? currentSong.url : ""} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null}></Song>
+        <Song key = {currentSong ? currentSong.url : ""} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload}></Song>
 
         
         
