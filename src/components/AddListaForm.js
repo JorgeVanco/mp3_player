@@ -98,7 +98,7 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
         if(window.innerHeight > 600){
             setHeight(Math.min(1.3*10 + 1.1, 1.3*listas.length + 0.5))
         }else{
-            setHeight(Math.min(2.5*8 +1.2, 2.5*listas.length + 0.3))
+            setHeight(Math.min(2.5*8 + 1.2, 2.5*listas.length + 0.3))
         }
     }, [listas])
 

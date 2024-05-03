@@ -1,25 +1,61 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Spotty",
+  "name": "Spotty",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "src": "spotty_ico.ico",
+      "sizes": "256x249",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "64.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "64x64"
     },
     {
-      "src": "logo512.png",
+      "src": "128.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "128x128"
+    },
+    {
+      "src": "256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "spotty_logo197x192.png",
+      "type": "image/png",
+      "sizes": "197x192"
+    },
+    {
+      "src": "spotty_logo526x512.png",
+      "type": "image/png",
+      "sizes": "526x512"
+    },
+    {
+      "src": "spotty_logo1052x1024.png",
+      "type": "image/png",
+      "sizes": "1052x1024"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "screenshots": [
+    {
+     "src": "spotty_logo526x512.png",
+      "sizes": "526x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Logo"
+    },
+    {
+      "src": "spotty_logo526x512.png",
+       "sizes": "526x512",
+       "type": "image/png",
+       "label": "Logo"
+     }
+]
 }
+
