@@ -49,9 +49,11 @@ const InfoSongs = ({cancion, cancionesSeleccionadas, setCancionesSeleccionadas, 
 
     return <div onClick={() => handleClick(setCurrentSong, cancion)} className={isPlaying? "infoSongsDiv playingCardSong": "infoSongsDiv"} style={{cursor:"pointer"}}>
                 <span id="infoSongsSpan" >
-                    <p id="infoSongsSongName" style={isSelected ? {"color": "#019D92"} : null}>{cancion.songName}</p>
-                    <p style={{margin: "0 .5em 0 .5em", fontSize:"small"}}>-</p>
-                    <p id= "infoSongsAuthor">{cancion.author}</p>
+                    <div id="infoSongsSpanDiv">
+                        <p id="infoSongsSongName" style={isSelected ? {"color": "#019D92"} : null}>{cancion.songName}</p>
+                        <p style={{margin: "0 .5em 0 .5em", fontSize:"small"}}>-</p>
+                        <p id= "infoSongsAuthor">{cancion.author}</p>
+                    </div>
                 </span>
                 <input id = "checkboxInfoSong" type="checkbox" onClick={(e) => handleStopPropagation(e)} checked={isSelected} onChange={() => handleSelect(cancion, isSelected, setIsSelected, cancionesSeleccionadas, setCancionesSeleccionadas)}></input>
         </div>

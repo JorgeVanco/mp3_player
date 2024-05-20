@@ -206,6 +206,7 @@ button{
 
 #infoSongsAuthor{
   font-size: small;
+  font-weight: 400;
   /* margin-left: 1em; */
   /* position:relative; */
   /* bottom:0.1em; */
@@ -254,8 +255,8 @@ button{
   text-align: center;
   display: inline-block;
   width: 80%;
-  height: 100%;
-  overflow: hidden;
+  /* height: 100%; */
+  /* overflow: hidden; */
   /* position:relative; */
   /* display:block;
   overflow: auto;
@@ -263,6 +264,16 @@ button{
   top: -4px; */
   /* vertical-align: middle; */
 }
+
+#infoSongsSpanDiv{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
+  font-weight:100;
+}
+
+
 #checkboxInfoSong{
   float:right;
   position:relative;
@@ -275,8 +286,8 @@ button{
   #infoSongsSpan{
     position: relative;
     top:20%;
-    transform: translateY(-12%);
-
+    transform: translateY(-20%);
+    /* font-size: larger; */
 
     /* text-align: center;
     display: inline-block;
