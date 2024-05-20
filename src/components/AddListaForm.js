@@ -109,7 +109,8 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
             
             <form id = "addListaForm" onSubmit={(e) => handleSubmit(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload)}>
                 <input type='text' placeholder='Crear una nueva lista' className={nombreListaNueva && listaElegida === "input" ? "listaAnadirSeleccionada" : null} value = {nombreListaNueva} onClick={() => setListaElegida("input")} onChange={(e) => setNombreListaNueva(e.target.value)}></input>
-                <div id={"formListsDiv"} style={{height: height.toString() + "em"}}>
+                {/* <div id={"formListsDiv"} style={{height: height.toString() + "em"}}> */}
+                <div id={"formListsDiv"}>
                     {listForm && listas ? listas.map((lista, index)=> {
                         return <div className={lista === listaElegida ? "listaFormDiv listaAnadirSeleccionada":"listaFormDiv"} style={{cursor: "pointer"}} onClick={() => setListaElegida(lista)} key = {index}><p className="listaFormName">{lista}</p></div>
                     }) 

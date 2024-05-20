@@ -22,7 +22,11 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  position:relative;
+  /* position:relative; */
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  position: fixed;
 }
 
 .App-link {

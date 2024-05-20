@@ -48,7 +48,8 @@ function App() {
       <Helmet>
           <title>{ title }</title>
         </Helmet>
-      <header className="App-header" style={{minHeight:window.innerHeight.toString() + "px"}}>
+      <header className="App-header">
+      {/* <header className="App-header" style={{minHeight:window.innerHeight.toString() + "px"}}> */}
 
         <Busqueda canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
 

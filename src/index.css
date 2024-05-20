@@ -5,6 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  position: fixed;
 }
 
 code {
@@ -248,7 +252,10 @@ button{
 
 #infoSongsSpan{
   text-align: center;
-  width: 100%;
+  display: inline-block;
+  width: 80%;
+  height: 100%;
+  overflow: hidden;
   /* position:relative; */
   /* display:block;
   overflow: auto;
@@ -268,7 +275,14 @@ button{
   #infoSongsSpan{
     position: relative;
     top:20%;
-    transform: translateY(-50%);
+    transform: translateY(-12%);
+
+
+    /* text-align: center;
+    display: inline-block;
+    width: 80%;
+    height: 100%; */
+    /* transform: translateY(-50%); */
   }
   
 }
