@@ -1,30 +1,16 @@
 import { useState  } from "react"
 import readDb from "../functions/readDb"
 import { LinkedList, Node } from "../classes/LinkedList"
-import getMusic from "../functions/getAllSongs"
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getStorage} from "firebase/storage";
+import getAllSongs from "../functions/getAllSongs"
 
-
-const handleChangeLista = (lista, setSongList, setListaActual) => {
+const handleChangeLista = (lista, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas, setShowListas) => {
     setListaActual(lista)
     let newList = new LinkedList()
     const storage = getStorage();
     if (!lista){
-        getMusic(storage).then((items)=>{
+        getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
 
-            items.forEach((itemRef) => {
-                getDownloadURL(ref(storage, itemRef._location.path_))
-                .then((url) => {
-                let node = new Node(itemRef._location.bucket, itemRef._location.path_, url)
-                newList.addNode(node)
-                setSongList(newList)
-                })
-                .catch((error) => {
-                // Handle any errors
-                console.log("ERROR:", error)
-                });
-            })
-        })
     }else{
         readDb(lista).then((querySnapshot) => {
             
@@ -38,10 +24,11 @@ const handleChangeLista = (lista, setSongList, setListaActual) => {
         })
 
     }
+    setShowListas(false)
 
 }
 
-const SelectListaComponent = ({listas, setSongList, setListaActual}) => {
+const SelectListaComponent = ({listas, setSongList, setListaActual, setCurrentSong, setTodasLasCanciones, setListas}) => {
     const [showListas, setShowListas] = useState(false)
 
     return (
@@ -52,9 +39,9 @@ const SelectListaComponent = ({listas, setSongList, setListaActual}) => {
         {showListas ? 
             <div style={{cursor: "pointer"}}>
                 {listas.map((lista, index) => {
-                    return <div key = {index} onClick = {() => handleChangeLista(lista, setSongList, setListaActual)}>{lista}</div>
+                    return <div key = {index} onClick = {() => handleChangeLista(lista, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas, setShowListas)}>{lista}</div>
                 })}
-                <div onClick = {() => handleChangeLista(null, setSongList, setListaActual)}>Ninguna</div>
+                <div onClick = {() => handleChangeLista(null, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas, setShowListas)}>Ninguna</div>
             </div>
         : null}
     </div>)

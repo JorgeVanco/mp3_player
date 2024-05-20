@@ -61,7 +61,7 @@ const Busqueda = ({canciones, currentSong, setCurrentSong, db, listas, setListas
                         : <div id = "seleccionaCancionDiv">
                             <p>Selecciona canciones para añadirlas a la lista</p>
                         </div>
-                        }
+                    }
             </div>
         </div>
     </>

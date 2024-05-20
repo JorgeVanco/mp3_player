@@ -286,7 +286,7 @@ button{
   #infoSongsSpan{
     position: relative;
     top:20%;
-    transform: translateY(-20%);
+    transform: translateY(-15%);
     /* font-size: larger; */
 
     /* text-align: center;

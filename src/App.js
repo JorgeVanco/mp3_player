@@ -8,7 +8,7 @@ import {useEffect, useState } from 'react';
 
 import Song from "./components/Song.js"
 import getAllSongs from "./functions/getAllSongs"
-import {LinkedList, Node, nodeConverter} from "./classes/LinkedList"
+import {LinkedList, nodeConverter} from "./classes/LinkedList"
 import SelectListaComponent from './components/SelectListaComponent';
 import MostrarCancionesComponent from './components/MostrarCancionesComponent';
 import Busqueda from './components/Busqueda';
@@ -27,7 +27,7 @@ function App() {
   useEffect(()=>{
     console.log("Reloading")
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
-  }, [reload])
+  }, [reload, storage])
 
   useEffect(()=> {
     setCurrentSong(songList.head)
@@ -67,9 +67,10 @@ function App() {
         </a> */}
 
         <MostrarCancionesComponent todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
-
-        <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>
-        <SelectListaComponent listas = {listas} setSongList = {setSongList} setListaActual = {setListaActual}></SelectListaComponent>
+        
+        {listaActual ? <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>: null}
+        
+        <SelectListaComponent listas = {listas} setSongList = {setSongList} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
 
         <Song key = {currentSong ? currentSong.url : ""} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload}></Song>
 
