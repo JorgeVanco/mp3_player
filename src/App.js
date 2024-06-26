@@ -51,7 +51,7 @@ function App() {
   }, [currentSong])
 
   let page;
-  if (tab == 0){
+  if (tab === 0){
     page = <>
             
             
@@ -63,14 +63,14 @@ function App() {
 
             
           </>
-  }else if(tab == 1){
+  }else if(tab === 1){
     page = <>
       <Busqueda canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
       <MostrarCancionesComponent todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
     </>
-  }else if(tab == 2){
+  }else if(tab === 2){
     page = <SelectListaComponent listas = {listas} setSongList = {setSongList} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
-  }else if(tab == 3){
+  }else if(tab === 3){
     page = <><SubirMusicComponent storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }
 
@@ -87,10 +87,10 @@ function App() {
 
       
         <Navbar setTab = {setTab}>
-          <div><FaMusic color = {tab == 0? "#00eeff" : "white"}></FaMusic></div>
-          <div><FaSearch color = {tab == 1? "#00eeff" : "white"}></FaSearch></div>
-          <div><MdLibraryMusic color = {tab == 2? "#00eeff" : "white"}></MdLibraryMusic></div>
-          <div><FiUpload color = {tab == 3? "#00eeff" : "white"}></FiUpload></div>
+          <div><FaMusic color = {tab === 0? "#00eeff" : "white"}></FaMusic></div>
+          <div><FaSearch color = {tab === 1? "#00eeff" : "white"}></FaSearch></div>
+          <div><MdLibraryMusic color = {tab === 2? "#00eeff" : "white"}></MdLibraryMusic></div>
+          <div><FiUpload color = {tab === 3? "#00eeff" : "white"}></FiUpload></div>
         </Navbar>
 
       </header>
