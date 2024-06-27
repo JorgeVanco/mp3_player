@@ -22,7 +22,7 @@ const handleSubir = (storage, setSongList, setCurrentSong, setTodasLasCanciones,
 const SubirMusicComponent = ({storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas}) =>  {
     const [subirMusica, setSubirMusica] = useState(false)
     return <>
-        <button id = "subirMusicToggleButton" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button>
+        <button id = "subirMusicToggleButton" className="blue-btn" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button>
         {
             subirMusica ? 
                 <div className = "blockingDiv">

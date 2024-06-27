@@ -154,16 +154,22 @@ button{
 }
 
 #subirMusicToggleButton{
+
+  position: absolute;
+  bottom: 20%;
+}
+
+
+
+.blue-btn{
   padding:0.4em 0.6em 0.4em 0.6em;
   font-size: medium;
   color: rgb(223, 223, 223);
   font-weight: bold;
   background-color: #285467;
-  position: absolute;
-  bottom: 20%;
 }
 
-#subirMusicToggleButton:hover{
+.blue-btn:hover{
   background-color: #4087a5;
 }
 
