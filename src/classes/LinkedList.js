@@ -12,7 +12,7 @@ class Node {
     formatName(path){
         let name = path.slice(0, path.length - 4)   // quita el .mp3
         name = name.replaceAll("_", " ")
-        let searchRegEx = new RegExp(/\((.*?)\)|\[(.*?)\]/)
+        let searchRegEx = new RegExp(/\((.*?)\)|\[(.*?)\]/g)
         name = name.replace(searchRegEx, "")
         name = name.trim()
         this.name =  name

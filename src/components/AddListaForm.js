@@ -62,15 +62,8 @@ const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setLi
         if (setSearchWord){
             setSearchWord("")
         }
-        // window.location.reload()
         setReload(true)
-    })
-
-
-
-    
-
-    
+    })    
 }
 
 const handleCancel = (setListForm, setListaElegida, setNombreListaNueva, setHacerGrande) => {
