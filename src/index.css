@@ -173,6 +173,18 @@ button{
   background-color: #4087a5;
 }
 
+.red-btn{
+  padding:0.4em 0.6em 0.4em 0.6em;
+  font-size: medium;
+  color: rgb(223, 223, 223);
+  font-weight: bold;
+  background-color: #ED0800;
+}
+
+.red-btn:hover{
+  background-color: #ed3700;
+}
+
 .infoSongsDiv{
   border-style: solid;
   border-width: 0 0 1px 0;

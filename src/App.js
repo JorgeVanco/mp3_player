@@ -86,7 +86,7 @@ function App() {
     }else{
       page = <>
         <>
-          <button className='' onClick={() => signOutGoogle(setUser)}>Log Out</button>
+          <button className='red-btn' onClick={() => signOutGoogle(setUser)}>Log Out</button>
         </>
       </>
     }
