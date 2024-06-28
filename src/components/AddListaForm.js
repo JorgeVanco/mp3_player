@@ -7,7 +7,6 @@ const anadirCancionLista = async(db, songsToAdd, nodeConverter, listaElegida) =>
         
         const ref = doc(db, listaElegida, song.name).withConverter(nodeConverter);
         await setDoc(ref, song);
-        console.log(song)
     });
     
 }
@@ -66,7 +65,10 @@ const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setLi
     })    
 }
 
-const handleCancel = (setListForm, setListaElegida, setNombreListaNueva, setHacerGrande) => {
+const handleCancel = (e, setListForm, setListaElegida, setNombreListaNueva, setHacerGrande) => {
+
+    e.stopPropagation();
+
     setListForm(false)
     setListaElegida("")
     setNombreListaNueva("")
@@ -96,12 +98,12 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
     }, [listas])
 
     return <>
-    <button className = "seleccionaCancionDivButton" onClick={() => setListForm(!listForm)}>Añadir a lista</button>
+    <button className = "seleccionaCancionDivButton" onClick={(e) => {e.stopPropagation();setListForm(!listForm)}}>Añadir a lista</button>
     {listForm ? 
-        <div className="blockingDiv">
+        <div className="blockingDiv" onClick={(e) => e.stopPropagation()}>
             
             <form id = "addListaForm" onSubmit={(e) => handleSubmit(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload)}>
-                <input type='text' placeholder='Crear una nueva lista' className={nombreListaNueva && listaElegida === "input" ? "listaAnadirSeleccionada" : null} value = {nombreListaNueva} onClick={() => setListaElegida("input")} onChange={(e) => setNombreListaNueva(e.target.value)}></input>
+                <input type='text' placeholder='Crear una nueva lista' className={nombreListaNueva && listaElegida === "input" ? "listaAnadirSeleccionada" : null} value = {nombreListaNueva} onClick={(e) => {e.stopPropagation();setListaElegida("input")}} onChange={(e) => setNombreListaNueva(e.target.value)}></input>
                 {/* <div id={"formListsDiv"} style={{height: height.toString() + "em"}}> */}
                 <div id={"formListsDiv"}>
                     {listForm && listas ? listas.map((lista, index)=> {
@@ -112,7 +114,7 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
                     
                 </div>
                 <button type='submit' className="submitBtnMusicSubir">Submit</button>
-                <button type="button" className="cancelBtn" onClick={() => handleCancel(setListForm, setListaElegida, setNombreListaNueva, setHacerGrande)}>Cancel</button>
+                <button type="button" className="cancelBtn" onClick={(e) => handleCancel(e, setListForm, setListaElegida, setNombreListaNueva, setHacerGrande)}>Cancel</button>
             </form> 
         </div>
         : 

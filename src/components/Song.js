@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import {BiSkipNextCircle, BiSkipPreviousCircle} from "react-icons/bi"
+import { useCallback, useEffect, useRef, useState } from "react";
 import AddListaForm from "./AddListaForm";
 import {RiRepeat2Line, RiRepeatOneLine} from "react-icons/ri"
 import { doc, setDoc, getDoc, collection, Timestamp} from "firebase/firestore";
 import {db} from "../firebase_files/firebase_app"
 
-
+import { FaPlay, FaPause } from "react-icons/fa";
+import { MdSkipPrevious, MdSkipNext } from "react-icons/md";
 
 const updateEscuchas = async(song_name, song_author) => {
     const dateObj = new Date()
@@ -34,8 +34,11 @@ const updateEscuchas = async(song_name, song_author) => {
 
 }
 
-const handleNext = (currentSong, setCurrentSong, audioRef) => {
-    const fractionListened = audioRef.current.currentTime / audioRef.current.duration;
+const handleNext = (e, currentSong, setCurrentSong, audioRef) => {
+
+    e.stopPropagation();
+
+    const fractionListened = audioRef.currentTime / audioRef.duration;
     const song_name = currentSong.songName;
     const song_author = currentSong.author;
 
@@ -47,8 +50,12 @@ const handleNext = (currentSong, setCurrentSong, audioRef) => {
     }
 }
 
-const handlePrev = (currentSong, setCurrentSong, audioRef) => {
-    const fractionListened = audioRef.current.currentTime/ audioRef.current.duration;
+const handlePrev = (e, currentSong, setCurrentSong, audioRef) => {
+
+    e.stopPropagation();
+
+
+    const fractionListened = audioRef.currentTime / audioRef.duration;
     const song_name = currentSong.songName;
     const song_author = currentSong.author;
 
@@ -79,11 +86,43 @@ const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repea
 
 }
 
-const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload}) => {
+const changeRepeatState = (e, setRepeatState, repeatState) => {
+
+    e.stopPropagation();
+
+    setRepeatState((repeatState + 1) % 3)
+
+}
+
+const pauseSong = (e, audioRef, setIsPaused) => {
+    e.stopPropagation();
+    audioRef.pause()
+    setIsPaused(true)
+}
+
+const playSong = (e, audioRef, setIsPaused) => {
+    e.stopPropagation();
+    audioRef.play()
+    setIsPaused(false)
+    
+
+}
+
+const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
-    const audioRef = useRef(null);
+    // const audioRef = useRef(null);
+    const [audioRef, setAudioRef] = useState(null)
+    const [isPaused, setIsPaused] = useState(false)
+    const audioRefCallback = useCallback(node => {
+        if (node !== null) {
+            setIsPaused(node.paused)
+            setAudioRef(node)
+        }
+    
+    })
+
     
     useEffect(() => {
         if (repeatState > 0){
@@ -97,23 +136,34 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
     if (currentSong == null){
         return null
     }
+
+    
+
     return (
-        <div id = "songCard" style = {hacerGrande ? {width:"100%", height:"100%", top:"0", left:"0", transform:"translate(0,0)", zIndex:"999", padding: "0"} : null}>
+        <div  className = {smallCard ? "smallCard" : "songCard"} onClick={()=>setSmallCard(!smallCard)} style = {hacerGrande ? {width:"100%", height:"100%", top:"0", left:"0", transform:"translate(0,0)", zIndex:"999", padding: "0"} : null}>
             <div>
                 <p id = "songName">{currentSong.songName}</p>
                 <p id = "songAuthor">{currentSong.author}</p>
             </div>
+
+            {smallCard && !isPaused ? <FaPause className="playButton" onClick={(e) => pauseSong(e, audioRef, setIsPaused)}></FaPause>
+            : smallCard ? <FaPlay className="playButton" onClick={(e) => playSong(e, audioRef,setIsPaused)}></FaPlay>
+            : null}
+
             <div id = {"controlSongDiv"}>
-                <BiSkipPreviousCircle size = {42} className="skipButton skipPrevious" onClick={() => handlePrev(currentSong, setCurrentSong, audioRef)}></BiSkipPreviousCircle>
-                <audio ref={audioRef}  key = {currentSong.url} controls="controls" autoPlay onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
-                <BiSkipNextCircle size = {42} className="skipButton skipNext" onClick={(e) => handleNext(currentSong, setCurrentSong, audioRef)}></BiSkipNextCircle>
+                {!smallCard ? <MdSkipPrevious  size = {42} className="skipButton skipPrevious" onClick={(e) => handlePrev(e, currentSong, setCurrentSong, audioRef)}></MdSkipPrevious >: null}
+                <audio ref={audioRefCallback}  key = {currentSong.url} controls={smallCard ? null : "controls"} autoPlay onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
+                {!smallCard ? <MdSkipNext size = {42} className="skipButton skipNext" onClick={(e) => handleNext(e, currentSong, setCurrentSong, audioRef)}></MdSkipNext>: null}
             </div>
-
-            <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
-
-            {
-                repeatState === 2 ? <RiRepeatOneLine size={28} className="repeatIcon" onClick={() => setRepeatState((repeatState + 1) % 3)} style={{color:"green"}}></RiRepeatOneLine>:
-                <RiRepeat2Line size={28} className="repeatIcon" onClick={() => setRepeatState((repeatState + 1) % 3)} style={repeatState ? {color:"green"} : null}></RiRepeat2Line>
+            {!smallCard ? 
+                <>
+                    <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
+                    {
+                        repeatState === 2 ? <RiRepeatOneLine size={28} className="repeatIcon" onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={{color:"green"}}></RiRepeatOneLine>:
+                        <RiRepeat2Line size={28} className="repeatIcon" onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={repeatState ? {color:"green"} : null}></RiRepeat2Line>
+                    }
+                </>
+                : null
             }
 
             

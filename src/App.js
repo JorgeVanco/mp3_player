@@ -40,9 +40,9 @@ function App() {
   const [reload, setReload] = useState(false)
   const [tab, setTab] = useState(0)
   const [user, setUser] = useState(null)
+  const [smallCard, setSmallCard] = useState(false)
 
   useEffect(()=>{
-    console.log("Reloading")
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
   }, [reload, storage])
 
@@ -59,13 +59,17 @@ function App() {
     
   }, [currentSong])
 
+  useEffect(() => {
+    setSmallCard(tab !== 0)
+  }, [tab])
+
   let page;
   if (tab === 0){
     page = <>
             
             {listaActual ? <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>: null}
             
-            <Song key = {currentSong ? currentSong.url : ""} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload}></Song>
+            {/* <Song key = {currentSong ? currentSong.url : ""} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload}></Song> */}
 
             
           </>
@@ -93,6 +97,8 @@ function App() {
 
   }
 
+  
+  
 
   return (
     <div className="App">
@@ -103,6 +109,9 @@ function App() {
 
 
         {page}
+
+
+        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload}></Song>
 
       
         <Navbar setTab = {setTab}>
