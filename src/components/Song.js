@@ -108,7 +108,14 @@ const playSong = (e, audioRef, setIsPaused) => {
 
 }
 
-const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard}) => {
+const toggleSmallCard = (smallCard, setSmallCard, setTab) => {
+    if (smallCard){
+        setTab(0)
+    }
+    setSmallCard(!smallCard)
+}
+
+const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
@@ -140,7 +147,7 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
     
 
     return (
-        <div  className = {smallCard ? "smallCard" : "songCard"} onClick={()=>setSmallCard(!smallCard)} style = {hacerGrande ? {width:"100%", height:"100%", top:"0", left:"0", transform:"translate(0,0)", zIndex:"999", padding: "0"} : null}>
+        <div  className = {smallCard ? "smallCard" : "songCard"} onClick={()=>toggleSmallCard(smallCard, setSmallCard, setTab)} style = {hacerGrande ? {width:"100%", height:"100%", top:"0", left:"0", transform:"translate(0,0)", zIndex:"999", padding: "0"} : null}>
             <div>
                 <p id = "songName">{currentSong.songName}</p>
                 <p id = "songAuthor">{currentSong.author}</p>
