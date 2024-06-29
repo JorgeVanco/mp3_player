@@ -577,7 +577,7 @@ input {
   display: none;
 }
 
-.selectListaComponent > h3{
+.selectListaComponent  h3{
   position: sticky;
   top: 0;
   border-color: #00818A;
@@ -638,7 +638,27 @@ input {
   margin: 0;
 }
 
+.songListInfo{
+  text-align: left;
+  padding: 0.6em 1em 0.6em 1em;
+  border-style: solid;
+  position:relative;
+  border-color: #00818A;
+  border-width: 0 0 1px 0;
+}
 
+.songListInfo p{
+  margin:0;
+}
+
+.listDeleteSong{
+  cursor: pointer;
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ED0800;
+}
 
 .repeatIcon{
   cursor:pointer;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forceUpdate, useEffect } from "react";
 
 import readDb from "../functions/readDb"
 import { LinkedList, Node } from "../classes/LinkedList"
@@ -6,6 +6,10 @@ import { getStorage} from "firebase/storage";
 import getAllSongs from "../functions/getAllSongs"
 
 import ListElement from "./ListElement";
+
+import { FaAngleDown } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { deleteSongInList } from "../functions/getListas";
 
 const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas) => {
     if (listaActual === lista){
@@ -32,6 +36,9 @@ const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActu
 
 const SelectListaComponent = ({user, listas, setSongList, listaActual, setListaActual, setCurrentSong, setTodasLasCanciones, setListas}) => {
     const [showdetailedInfo, setShowDetailedInfo] = useState(null)
+    const [forceUpdate, setForceUpdate] = useState(0)
+
+    useEffect(() => {setForceUpdate(0)}, [forceUpdate])
 
     if (!user){
         return (<>
@@ -42,6 +49,7 @@ const SelectListaComponent = ({user, listas, setSongList, listaActual, setListaA
             </>)
     }
 
+
     return (<>
         <div id = "selectListaComponent" className="selectListaComponent">
         <h3>Tus listas</h3>
@@ -50,10 +58,18 @@ const SelectListaComponent = ({user, listas, setSongList, listaActual, setListaA
 
         {showdetailedInfo ? 
             <div>
-                <div onClick = {() => setShowDetailedInfo(null)}>Ocultar información detallada</div>
+                <div style = {{height:"1.5em", textAlign:"center"}} onClick = {() => setShowDetailedInfo(null)}><FaAngleDown size={23} style={{margin: "auto"}}></FaAngleDown></div>
                 <h3>{showdetailedInfo}</h3>
+
                 {Object.keys(listas[showdetailedInfo]).map((song, index) => {
-                    return <p key = {index}>{listas[showdetailedInfo][song].songName}</p>
+                    return ( 
+                        <div className = "songListInfo" key = {index}>
+                            <p>
+                            {listas[showdetailedInfo][song].songName}
+                            </p>
+                            <FaRegTrashAlt className="listDeleteSong" onClick={() => {deleteSongInList(showdetailedInfo, listas[showdetailedInfo], song, user);setForceUpdate(1)}}></FaRegTrashAlt>
+                        </div>
+                    )
                 })}
             </div>
             

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import {doc, getDoc, setDoc, updateDoc } from "firebase/firestore"; 
 import { getSongFormat } from "../functions/utils";
+import getListas from "../functions/getListas";
 
 const anadirCancionLista = async(user, db, songsToAdd, nodeConverter, listaElegida) => {
     const listasRef = doc(db, user.email, "listas")
@@ -73,6 +74,7 @@ const handleSubmit = async(e, user, db, songsToAdd, nodeConverter, listaElegida,
             setSearchWord("")
         }
         setReload(true)
+        getListas(user, setListas)
     })
     // setReload(true)
     // addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
