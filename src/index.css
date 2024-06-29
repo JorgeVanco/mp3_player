@@ -38,6 +38,7 @@ code {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 30%;
 }
 
 .smallCard{
@@ -57,7 +58,7 @@ code {
   text-overflow: ellipsis;
 }
 
-.smallCard div:nth-child(1){
+.smallCard > div:nth-child(1){
   display:inline-block;
   position:relative;
   width:75%;
@@ -69,10 +70,20 @@ code {
 
 .playButton{
   cursor:pointer;
+}
+
+.smallCardPlayButton{
   position:absolute;
   top: 50%;
   right:5%;
   transform: translate(-50%, -50%);
+}
+
+@media only screen and (max-width: 1000px) {
+  .songCard {
+    width: 50%;
+    padding: 1em 0 .7em 0;
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -82,13 +93,29 @@ code {
   }
 }
 
-#controlSongDiv{
+.controlSongDiv{
   display: flex;
   align-items: center; 
   justify-content: center;
   padding:.5em;
+  justify-content: space-between;
+  /* padding-left:2em;
+  padding-right:2em; */
 }
+
+.controlSongDiv * {
+  /* flex-grow: 1; */
+}
+
 .skipButton{
+  /* height: 100%; */
+  padding: 0 .1em 0 .1em;
+  cursor: pointer;
+  bottom: 6.5%;
+  
+}
+
+.rewindButton{
   height: 100%;
   padding: 0 .1em 0 .1em;
   cursor: pointer;
@@ -108,8 +135,8 @@ code {
   audio{
     width: 100%;
   }
-  #controlSongDiv{
-    padding: 0.7em 0.1em 0.7em 0.1em;
+  .controlSongDiv{
+    padding: 0.7em 1.2em 0.7em 1.2em;
   }
   /* .skipButton{
     position:absolute;
@@ -617,4 +644,36 @@ input {
   margin:auto;
   color:#00eeff;
   
+}
+
+/* Progess Bar */
+.progressBarContainer{
+  position: absolute;
+  left:50%;
+  transform: translateX(-50%);
+  margin: 0;
+  width: 90%;
+  height: 0.5em;
+  background-color: transparent;
+}
+
+.progressBarContainerSmallCard{
+  position: absolute;
+  top:0;
+  width: 100vw;
+  height: 0.5em;
+}
+
+.progressBar {
+  width: 100%;
+  height: 40%;
+  border-radius: 9999px;
+  background-color: #f1f1f1;
+}
+
+
+.progressBarInner{
+  border-radius: 9999px;
+  height: 100%;
+  background-color: #00eeff;
 }

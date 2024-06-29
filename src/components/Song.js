@@ -4,7 +4,8 @@ import {RiRepeat2Line, RiRepeatOneLine} from "react-icons/ri"
 import { doc, setDoc, getDoc, collection, Timestamp} from "firebase/firestore";
 import {db} from "../firebase_files/firebase_app"
 
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaPlayCircle, FaPauseCircle } from "react-icons/fa";
+import { TbRewindForward10, TbRewindBackward10 } from "react-icons/tb";
 import { MdSkipPrevious, MdSkipNext } from "react-icons/md";
 
 const updateEscuchas = async(song_name, song_author) => {
@@ -68,10 +69,10 @@ const handlePrev = (e, currentSong, setCurrentSong, audioRef) => {
 }
 
 const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef) => {
-
     if (!repeat){
-        handleNext(currentSong, setCurrentSong, audioRef)
+        handleNext(e, currentSong, setCurrentSong, audioRef)
     }else{
+        e.stopPropagation();
         e.target.play()
 
         const song_name = currentSong.songName;
@@ -115,6 +116,21 @@ const toggleSmallCard = (smallCard, setSmallCard, setTab) => {
     setSmallCard(!smallCard)
 }
 
+const rewind = (e, audioRef, time) => {
+    e.stopPropagation();
+    audioRef.currentTime += time
+}
+
+const progressBarClick = (e, audioRef, progressBarRef) => {
+    e.stopPropagation();
+
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const percentage = x / width;
+    audioRef.currentTime = audioRef.duration * percentage
+}
+
 const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
@@ -122,9 +138,11 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
     // const audioRef = useRef(null);
     const [audioRef, setAudioRef] = useState(null)
     const [isPaused, setIsPaused] = useState(false)
+    const [percentage, setPercentage] = useState(0)
+    const progressBarRef = useRef(null)
+
     const audioRefCallback = useCallback(node => {
         if (node !== null) {
-            setIsPaused(node.paused)
             setAudioRef(node)
         }
     
@@ -139,6 +157,14 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
         }
     }, [repeatState])
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (audioRef){
+                setPercentage((audioRef.currentTime / audioRef.duration) * 100)
+            }
+        }, 100)
+        return () => clearInterval(interval);
+    }, [audioRef])
 
     if (currentSong == null){
         return null
@@ -148,20 +174,35 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
 
     return (
         <div  className = {smallCard ? "smallCard" : "songCard"} onClick={()=>toggleSmallCard(smallCard, setSmallCard, setTab)} style = {hacerGrande ? {width:"100%", height:"100%", top:"0", left:"0", transform:"translate(0,0)", zIndex:"999", padding: "0"} : null}>
-            <div>
+            <div style={smallCard ? null : {marginBottom: "0.5em"}}>
                 <p id = "songName">{currentSong.songName}</p>
                 <p id = "songAuthor">{currentSong.author}</p>
             </div>
 
-            {smallCard && !isPaused ? <FaPause className="playButton" onClick={(e) => pauseSong(e, audioRef, setIsPaused)}></FaPause>
-            : smallCard ? <FaPlay className="playButton" onClick={(e) => playSong(e, audioRef,setIsPaused)}></FaPlay>
-            : null}
 
-            <div id = {"controlSongDiv"}>
-                {!smallCard ? <MdSkipPrevious  size = {42} className="skipButton skipPrevious" onClick={(e) => handlePrev(e, currentSong, setCurrentSong, audioRef)}></MdSkipPrevious >: null}
-                <audio ref={audioRefCallback}  key = {currentSong.url} controls={smallCard ? null : "controls"} autoPlay onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
-                {!smallCard ? <MdSkipNext size = {42} className="skipButton skipNext" onClick={(e) => handleNext(e, currentSong, setCurrentSong, audioRef)}></MdSkipNext>: null}
+            <div className={smallCard ? "progressBarContainerSmallCard" :"progressBarContainer"}>
+                <div className="progressBar" ref = {progressBarRef} onClick={(e) => progressBarClick(e, audioRef, progressBarRef)}>
+                    <div className="progressBarInner" style={{width:`${percentage}%`}}></div>
+                </div>
             </div>
+
+            <div className= {"controlSongDiv"}>
+                {!smallCard ? <TbRewindBackward10 size = {42} className="rewindButton" onClick={(e) => rewind(e, audioRef, -10)}></TbRewindBackward10 >: null}
+                {!smallCard ? <MdSkipPrevious  size = {42} className="skipButton skipPrevious" onClick={(e) => handlePrev(e, currentSong, setCurrentSong, audioRef)}></MdSkipPrevious >: null}
+                
+                {
+                    smallCard && isPaused ? <FaPlay className="playButton smallCardPlayButton" onClick={(e) => playSong(e, audioRef, setIsPaused)}></FaPlay>:
+                    smallCard && !isPaused ? <FaPause className="playButton smallCardPlayButton" onClick={(e) => pauseSong(e, audioRef,setIsPaused)}></FaPause>:
+                    isPaused ? <FaPlayCircle size={42} className="playButton" onClick={(e) => playSong(e, audioRef, setIsPaused)}></FaPlayCircle>:
+                    <FaPauseCircle size={42} className="playButton" onClick={(e) => pauseSong(e, audioRef,setIsPaused)}></FaPauseCircle>
+                }
+                
+                <audio ref={audioRefCallback}  key = {currentSong.url} autoPlay  onPlay={() => setIsPaused(false)} onPause={() => setIsPaused(true)} onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
+                {!smallCard ? <MdSkipNext size = {42} className="skipButton skipNext" onClick={(e) => handleNext(e, currentSong, setCurrentSong, audioRef)}></MdSkipNext>: null}
+                {!smallCard ? <TbRewindForward10 size = {42} className="rewindButton" onClick={(e) => rewind(e, audioRef, 10)}></TbRewindForward10>: null}
+            </div>
+
+
             {!smallCard ? 
                 <>
                     <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
