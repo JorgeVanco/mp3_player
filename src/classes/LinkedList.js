@@ -50,11 +50,18 @@ class LinkedList {
             this.head = newNode
             return
         }
-        while (node.next != null){
-            node = node.next
+        if (this.head.prev !== null){
+            node = this.head.prev
         }
+        
         node.next = newNode
         newNode.prev = node
+        this.head.prev = newNode
+    }
+
+    closeLoop(){
+        // this.head.prev.next = this.head
+        this.head.prev = null
     }
 
     printList(){

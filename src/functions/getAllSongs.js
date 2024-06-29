@@ -38,6 +38,7 @@ const createSongLinkedList = async (items, scores, storage, setSongList, setCurr
   songNodes.forEach((node) => {
     newSongList.addNode(node)
   })
+  newSongList.closeLoop()
 
 
 }
@@ -81,15 +82,15 @@ const getAllSongs = async(storage, setSongList, setCurrentSong, setTodasLasCanci
   sortByPreferences(items, storage, setSongList, setCurrentSong, setTodasLasCanciones).then((items) => {
   })
   
-  readDb("rastreador_listas_de_musica_314").then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
+  // readDb("rastreador_listas_de_musica_314").then((querySnapshot) => {
+  //   querySnapshot.forEach((doc) => {
 
-      if (doc.id === "okh8JpYIdDRRUmxRhrPO"){
-        setListas(doc.data().listas)
+  //     if (doc.id === "okh8JpYIdDRRUmxRhrPO"){
+  //       setListas(doc.data().listas)
 
-      }
-    });
-  })
+  //     }
+  //   });
+  // })
 
 
 }

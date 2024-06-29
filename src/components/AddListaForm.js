@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react"
-import {doc, setDoc } from "firebase/firestore"; 
+import {doc, getDoc, setDoc, updateDoc } from "firebase/firestore"; 
+import { getSongFormat } from "../functions/utils";
 
+const anadirCancionLista = async(user, db, songsToAdd, nodeConverter, listaElegida) => {
+    const listasRef = doc(db, user.email, "listas")
+    const listasSnap = await getDoc(listasRef);
+    let lista = listasSnap.data()[listaElegida] || {}
 
-const anadirCancionLista = async(db, songsToAdd, nodeConverter, listaElegida) => {
-    songsToAdd.forEach(async(song) => {
-        
-        const ref = doc(db, listaElegida, song.name).withConverter(nodeConverter);
-        await setDoc(ref, song);
-    });
+    songsToAdd.forEach((song) => {
+        let [name, value] = getSongFormat(song)
+        lista[name] = value
+    })
+
     
+    let newDoc = {}
+    newDoc[listaElegida] = lista
+    if (listasSnap.exists()){
+        await updateDoc(listasRef, newDoc)
+    }else{
+        await setDoc(listasRef, newDoc)
+    }
 }
 
 const addListToListsDoc = async(listas, setListas, db, listaElegida) => {
@@ -30,7 +41,7 @@ const addListToListsDoc = async(listas, setListas, db, listaElegida) => {
     }
 }
 
-const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload) => {
+const handleSubmit = async(e, user, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload) => {
     e.preventDefault()
 
     if (!listaElegida || (listaElegida === "input" && !nombreListaNueva)){
@@ -43,8 +54,8 @@ const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setLi
     }else{
         listaElegidaAnadir = listaElegida
     }
-    anadirCancionLista(db, songsToAdd, nodeConverter, listaElegidaAnadir)
-    addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
+
+    anadirCancionLista(user, db, songsToAdd, nodeConverter, listaElegidaAnadir).then(()=>{
         setListaElegida("")
         setNombreListaNueva("")
         setListForm(false)
@@ -62,7 +73,27 @@ const handleSubmit = async(e, db, songsToAdd, nodeConverter, listaElegida, setLi
             setSearchWord("")
         }
         setReload(true)
-    })    
+    })
+    // setReload(true)
+    // addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
+    //     setListaElegida("")
+    //     setNombreListaNueva("")
+    //     setListForm(false)
+        
+    //     if(setAbrir){
+    //         setAbrir(false)
+    //     }
+    //     if(setHacerGrande){
+    //         setHacerGrande(false)
+    //     }
+    //     if (setCancionesSeleccionadas !== null){
+    //         setCancionesSeleccionadas([])
+    //     }
+    //     if (setSearchWord){
+    //         setSearchWord("")
+    //     }
+    //     setReload(true)
+    // })
 }
 
 const handleCancel = (e, setListForm, setListaElegida, setNombreListaNueva, setHacerGrande) => {
@@ -77,7 +108,7 @@ const handleCancel = (e, setListForm, setListaElegida, setNombreListaNueva, setH
     }
 }
 
-const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, setAbrir = null, setHacerGrande = null, setSearchWord = null}) => {
+const AddListaForm = ({user, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, setAbrir = null, setHacerGrande = null, setSearchWord = null}) => {
     const [listForm, setListForm] = useState(false)
     const [listaElegida, setListaElegida] = useState("")
     const [nombreListaNueva, setNombreListaNueva] = useState("")
@@ -91,9 +122,9 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
 
     useEffect(() => {
         if(window.innerHeight > 600){
-            setHeight(Math.min(1.3*10 + 1.1, 1.3*listas.length + 0.5))
+            setHeight(Math.min(1.3*10 + 1.1, 1.3*Object.keys(listas).length + 0.5))
         }else{
-            setHeight(Math.min(2.5*8 + 1.2, 2.5*listas.length + 0.3))
+            setHeight(Math.min(2.5*8 + 1.2, 2.5*Object.keys(listas).length + 0.3))
         }
     }, [listas])
 
@@ -102,11 +133,11 @@ const AddListaForm = ({db, songsToAdd, nodeConverter, listas, setListas, setCanc
     {listForm ? 
         <div className="blockingDiv" onClick={(e) => e.stopPropagation()}>
             
-            <form id = "addListaForm" onSubmit={(e) => handleSubmit(e, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload)}>
+            <form id = "addListaForm" onSubmit={(e) => handleSubmit(e, user, db, songsToAdd, nodeConverter, listaElegida, setListas, listas, setListForm, setListaElegida, setCancionesSeleccionadas, nombreListaNueva, setNombreListaNueva, setHacerGrande, setAbrir, setSearchWord, setReload)}>
                 <input type='text' placeholder='Crear una nueva lista' className={nombreListaNueva && listaElegida === "input" ? "listaAnadirSeleccionada" : null} value = {nombreListaNueva} onClick={(e) => {e.stopPropagation();setListaElegida("input")}} onChange={(e) => setNombreListaNueva(e.target.value)}></input>
                 {/* <div id={"formListsDiv"} style={{height: height.toString() + "em"}}> */}
                 <div id={"formListsDiv"}>
-                    {listForm && listas ? listas.map((lista, index)=> {
+                    {listForm && listas ? Object.keys(listas).map((lista, index)=> {
                         return <div className={lista === listaElegida ? "listaFormDiv listaAnadirSeleccionada":"listaFormDiv"} style={{cursor: "pointer"}} onClick={() => setListaElegida(lista)} key = {index}><p className="listaFormName">{lista}</p></div>
                     }) 
                     : 

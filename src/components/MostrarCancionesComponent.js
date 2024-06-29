@@ -4,7 +4,7 @@ import InfoSongs from './InfoSongs';
 import AddListaForm from './AddListaForm';
 
 
-const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeConverter, setCurrentSong, currentSong, setReload}) =>{
+const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeConverter, setCurrentSong, currentSong, setReload, user}) =>{
     const [mostrarCanciones, setMostrarCanciones] = useState(false)
     const [cancionesSeleccionadas, setCancionesSeleccionadas] = useState([])
     const [abrir, setAbrir] = useState(false)
@@ -36,8 +36,11 @@ const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeCo
                 
 
                 {cancionesSeleccionadas.length !== 0 ? 
-                    <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setAbrir={setAbrir} setHacerGrande = {setHacerGrande} setReload = {setReload}></AddListaForm>
-                    :<div id = "seleccionaCancionDiv">
+                    <AddListaForm user = {user} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setAbrir={setAbrir} setHacerGrande = {setHacerGrande} setReload = {setReload}></AddListaForm>
+                    : !user ?
+                    <div id = "seleccionaCancionDiv"><p>Inicia sesión para crear listas</p></div>
+                    :
+                    <div id = "seleccionaCancionDiv">
                         <p>Selecciona canciones para añadirlas a la lista</p>
                     </div>
                     }

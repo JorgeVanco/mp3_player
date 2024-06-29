@@ -19,6 +19,7 @@ import Navbar from './components/Navbar';
 
 // Functions
 import getAllSongs from "./functions/getAllSongs"
+import getListas from './functions/getListas.js';
 import {signInWithGoogle, signOutGoogle} from './functions/auth.js';
 
 // Icons
@@ -51,6 +52,10 @@ function App() {
   }, [songList])
 
   useEffect(() => {
+    getListas(user, setListas)
+  }, [user])
+
+  useEffect(() => {
     if (!currentSong){
       setTitle("Escucha música")
     }else{
@@ -75,11 +80,11 @@ function App() {
           </>
   }else if(tab === 1){
     page = <>
-      <Busqueda canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
-      <MostrarCancionesComponent todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
+      <Busqueda user = {user} canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
+      <MostrarCancionesComponent user={user} todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
     </>
   }else if(tab === 2){
-    page = <SelectListaComponent listas = {listas} setSongList = {setSongList} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
+    page = <SelectListaComponent user = {user} listas = {listas} setSongList = {setSongList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
   }else if(tab === 3){
     page = <><SubirMusicComponent storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }else if(tab === 4){

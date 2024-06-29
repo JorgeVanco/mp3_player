@@ -1,4 +1,5 @@
 import getAllSongs from "../functions/getAllSongs";
+import { getSongFormat } from "../functions/utils";
 import {ref, uploadBytes} from "firebase/storage";
 import { useState } from "react";
 
@@ -25,25 +26,9 @@ const handleSubir = async (storage, setSongList, setCurrentSong, setTodasLasCanc
                 let node = new Node(snapshot.ref._location.bucket, snapshot.ref._location.path_, downloadURL)
                 let newAtt = {}
 
-                // Get the author and song name
-                // If the author or song name are not defined, set them to "undefined"
-                let author;
-                if (!node.author){
-                    author = "undefined"
-                }else{
-
-                    author = node.author.replaceAll(".", "").replaceAll("/", "").replaceAll(".", "")
-                }
-
-                let songName;
-                if (!node.songName){
-                    songName = "undefined"
-                }else{
-                    songName = node.songName.replaceAll(".", "").replaceAll("/", "").replaceAll(".", "")
-                }
-
-                // Store the info of the song
-                newAtt[songName + "-" + author] = {"bucket":node.bucket, "path":node.path, "url":node.url, "author":node.author || author, "songName":node.songName || songName, "reproductions":0}
+                // Get the song format
+                let [name, value] = getSongFormat(node)
+                newAtt[name] = value
 
                 // Update the songs document with the new song
                 try{

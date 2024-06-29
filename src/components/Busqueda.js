@@ -26,7 +26,7 @@ const handleChange = (e, setSearchWord, canciones, setMatchedSongs) => {
 
 }
 
-const Busqueda = ({canciones, currentSong, setCurrentSong, db, listas, setListas, nodeConverter, songsToAdd, setReload}) => {
+const Busqueda = ({user, canciones, currentSong, setCurrentSong, db, listas, setListas, nodeConverter, songsToAdd, setReload}) => {
     const [cancionesSeleccionadas, setCancionesSeleccionadas] = useState([])
     const [matchedSongs, setMatchedSongs] = useState([])
     const [searchWord, setSearchWord] = useState("")
@@ -55,7 +55,7 @@ const Busqueda = ({canciones, currentSong, setCurrentSong, db, listas, setListas
                 </div>
                     {cancionesSeleccionadas.length !== 0 ? 
                         <>
-                            <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setHacerGrande={setHacerGrande} setSearchWord = {setSearchWord} setReload = {setReload}></AddListaForm>
+                            <AddListaForm user={user} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setHacerGrande={setHacerGrande} setSearchWord = {setSearchWord} setReload = {setReload}></AddListaForm>
                             <button className = "seleccionaCancionDivButton eliminarTodasSelecciones" onClick={() => setCancionesSeleccionadas([])}>Eliminar selecciones</button>
                         </>
                         : <div id = "seleccionaCancionDiv">
