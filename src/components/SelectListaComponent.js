@@ -52,37 +52,42 @@ const SelectListaComponent = ({user, listas, setSongList, listaActual, setListaA
 
     return (<>
         <div id = "selectListaComponent" className="selectListaComponent">
-        <h3>Tus listas</h3>
 
         
 
         {showdetailedInfo ? 
             <div>
-                <div style = {{height:"1.5em", textAlign:"center"}} onClick = {() => setShowDetailedInfo(null)}><FaAngleDown size={23} style={{margin: "auto"}}></FaAngleDown></div>
-                <h3>{showdetailedInfo}</h3>
+                <div style = {{height:"1.5em", textAlign:"center", position:"sticky", top:"0", backgroundColor: "#282c34",zIndex: "3"}} onClick = {() => setShowDetailedInfo(null)}><FaAngleDown size={23} style={{margin: "auto"}}></FaAngleDown></div>
+                <h3 className="detailedInfoListName">{showdetailedInfo}</h3>
 
                 {Object.keys(listas[showdetailedInfo]).map((song, index) => {
                     return ( 
                         <div className = "songListInfo" key = {index}>
-                            <p>
-                            {listas[showdetailedInfo][song].songName}
+                            <p className="listName">
+                                {listas[showdetailedInfo][song].songName}
                             </p>
-                            <FaRegTrashAlt className="listDeleteSong" onClick={() => {deleteSongInList(showdetailedInfo, listas[showdetailedInfo], song, user);setForceUpdate(1)}}></FaRegTrashAlt>
+                            <p className="numberSongs">
+                                {listas[showdetailedInfo][song].author}
+                            </p>
+                            <FaRegTrashAlt className="listDeleteSong delete" onClick={() => {deleteSongInList(showdetailedInfo, listas[showdetailedInfo], song, user);setForceUpdate(1)}}></FaRegTrashAlt>
                         </div>
                     )
                 })}
             </div>
             
-            : Object.keys(listas).length > 0 ?
-
-            <div className="selectListaContainer">
-                    {Object.keys(listas).map((lista, index) => {
-                        return <ListElement key = {index} setShowDetailedInfo = {setShowDetailedInfo} isPlaying = {listaActual === lista} listas = {listas} onClickEvent = {(e) => {e.stopPropagation();handleChangeLista(lista, listas, listaActual, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas)}} lista = {lista}></ListElement>
-                    })}
-                    {/* <div onClick = {() => handleChangeLista(null, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas)}>Ninguna</div> */}
-            </div>
-            :
-            <p>No tienes listas</p>
+            : 
+            <><h3>Tus listas</h3>
+            {
+                Object.keys(listas).length > 0 ?
+                <div className="selectListaContainer">
+                        {Object.keys(listas).map((lista, index) => {
+                            return <ListElement key = {index} user = {user} setForceUpdate = {setForceUpdate} setShowDetailedInfo = {setShowDetailedInfo} isPlaying = {listaActual === lista} listas = {listas} onClickEvent = {(e) => {e.stopPropagation();handleChangeLista(lista, listas, listaActual, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas)}} lista = {lista}></ListElement>
+                        })}
+                        {/* <div onClick = {() => handleChangeLista(null, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas)}>Ninguna</div> */}
+                </div>
+                :
+                <p>No tienes listas</p>
+            }</>
         }
 
     </div>

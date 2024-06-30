@@ -100,7 +100,17 @@ code {
   padding:.5em;
   justify-content: space-between;
 }
+/* .controlSongDiv > *{
+  color:rgb(154, 154, 154);
 
+}
+
+.controlSongDiv > *{
+  cursor:pointer;
+}
+.controlSongDiv:hover > *{
+  color:white;
+} */
 
 
 .skipButton{
@@ -437,7 +447,6 @@ button{
 
 
 .listaAnadirSeleccionada{
-  background-color: #00818a79;
   height: 1.5em;
   align-items: center;
   text-align: center;
@@ -577,7 +586,7 @@ input {
   display: none;
 }
 
-.selectListaComponent  h3{
+.selectListaComponent > h3{
   position: sticky;
   top: 0;
   border-color: #00818A;
@@ -588,6 +597,18 @@ input {
   margin:0;
   padding: 1em;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.detailedInfoListName{
+  position: sticky;
+  top: 1.1em;
+  border-color: #00818A;
+  background-color: #282c34;
+  z-index: 3;
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  margin:0;
+  padding: 1em;
 }
 
 .selectListaContainer > div{
@@ -651,13 +672,25 @@ input {
   margin:0;
 }
 
-.listDeleteSong{
-  cursor: pointer;
-  position: absolute;
-  right: 5%;
+.delete{
+  color: #747474;
   top: 50%;
   transform: translateY(-50%);
+  cursor: pointer;
+  position: absolute;
+}
+
+.delete:hover{
+  /* color: white; */
   color: #ED0800;
+}
+
+.listDeleteSong{
+  right: 5%;
+}
+
+.listDeleteList{
+  right: 10%;
 }
 
 .repeatIcon{
@@ -693,6 +726,18 @@ input {
   color:#00eeff;
   
 }
+
+/* .Row > div *{
+  color:rgb(154, 154, 154);
+
+}
+
+.Row > div{
+  cursor:pointer;
+}
+.Row:hover > div *{
+  color:white;
+} */
 
 /* Progess Bar */
 .progressBarContainer{

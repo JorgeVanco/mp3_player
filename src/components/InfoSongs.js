@@ -50,7 +50,7 @@ const InfoSongs = ({cancion, cancionesSeleccionadas, setCancionesSeleccionadas, 
     return <div onClick={() => handleClick(setCurrentSong, cancion)} className={isPlaying? "infoSongsDiv playingCardSong": "infoSongsDiv"} style={{cursor:"pointer"}}>
                 <span id="infoSongsSpan" >
                     <div id="infoSongsSpanDiv">
-                        <p id="infoSongsSongName" style={isSelected ? {"color": "#019D92"} : null}>{cancion.songName}</p>
+                        <p id="infoSongsSongName" style={isSelected ? {"color": "rgb(0 212 197)"} : null}>{cancion.songName}</p>
                         <p style={{margin: "0 .5em 0 .5em", fontSize:"small"}}>-</p>
                         <p id= "infoSongsAuthor">{cancion.author}</p>
                     </div>

@@ -28,3 +28,5 @@ storage.rules
 .github
 
 .pytest_cache
+
+/videos_descargados

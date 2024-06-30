@@ -1,5 +1,5 @@
 import { db } from "../firebase_files/firebase_app";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteField } from "firebase/firestore";
 
 const getListas = async(user, setListas) => {
     if (user){
@@ -21,5 +21,13 @@ const deleteSongInList = async(nombreLista, lista, song, user) => {
     await updateDoc(listasRef, newDoc);
 }
 
-export {deleteSongInList};
+const deleteList = async(nombreLista, listas, user) => {
+    const listasRef = doc(db, user.email, "listas")
+    delete listas[nombreLista]
+    await updateDoc(listasRef, {
+        [nombreLista]: deleteField()
+    })
+}
+
+export {deleteSongInList, deleteList};
 export default getListas;
