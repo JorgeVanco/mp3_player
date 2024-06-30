@@ -50,7 +50,7 @@ const Busqueda = ({user, canciones, currentSong, setCurrentSong, db, listas, set
             <div id="resultadosBusquedaContainer" style={searchWord.length !== 0 && matchedSongs.length !== 0 ? {height:(height + sumHeight).toString()+"em"}:null}>
                 <div id = "resultadosBusquedaDiv" style ={searchWord.length !== 0 && matchedSongs.length !== 0 ? {height:(height).toString()+"em"}:null}>
                     {searchWord.length !== 0 && matchedSongs.length !== 0 ? matchedSongs.map((song, index) => {
-                        return <InfoSongs key = {index} cancion = {song} cancionesSeleccionadas={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === song}></InfoSongs>
+                        return <InfoSongs key = {index} user = {user} cancion = {song} cancionesSeleccionadas={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === song}></InfoSongs>
                     }): null} 
                 </div>
                     {cancionesSeleccionadas.length !== 0 ? 

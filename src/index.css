@@ -376,13 +376,13 @@ button{
 
 @media only screen and (max-width: 600px) {
   .seleccionaCancionDivButton{
-    transform: translateY(0);
+    transform: translateY(25%);
   }
 
-  .tranlateY25mobile{
+  /* .tranlateY25mobile{
     transform: translateY(25%) !important;
   }
-  
+   */
 }
 
 #seleccionaCancionDiv button:hover{
@@ -502,7 +502,7 @@ input {
   }
   
   .abierto{
-    height: 16em !important;
+    height: 16.5em !important;
   }
 
 
@@ -703,6 +703,9 @@ input {
 @media only screen and (max-width: 600px) {
   .repeatIcon{
     bottom: 6.5%;
+  }
+  .listDeleteList{
+    right: 15%;
   }
 }
 

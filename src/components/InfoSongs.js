@@ -36,7 +36,7 @@ const checkIsSelected = (cancion, cancionesSeleccionadas, setIsSelected) => {
     setIsSelected(found)
 }
 
-const InfoSongs = ({cancion, cancionesSeleccionadas, setCancionesSeleccionadas, setCurrentSong, isPlaying}) => {
+const InfoSongs = ({cancion, cancionesSeleccionadas, setCancionesSeleccionadas, setCurrentSong, isPlaying, user}) => {
     const [isSelected, setIsSelected] = useState(false)
 
     useEffect(() => {
@@ -55,7 +55,9 @@ const InfoSongs = ({cancion, cancionesSeleccionadas, setCancionesSeleccionadas, 
                         <p id= "infoSongsAuthor">{cancion.author}</p>
                     </div>
                 </span>
-                <input id = "checkboxInfoSong" type="checkbox" onClick={(e) => handleStopPropagation(e)} checked={isSelected} onChange={() => handleSelect(cancion, isSelected, setIsSelected, cancionesSeleccionadas, setCancionesSeleccionadas)}></input>
+                {user ? 
+                    <input id = "checkboxInfoSong" type="checkbox" onClick={(e) => handleStopPropagation(e)} checked={isSelected} onChange={() => handleSelect(cancion, isSelected, setIsSelected, cancionesSeleccionadas, setCancionesSeleccionadas)}></input>
+                : null}
         </div>
 }
 

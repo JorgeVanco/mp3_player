@@ -30,7 +30,7 @@ const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeCo
             <div id = {"mostrarCancionesContainer"} className={abrir ? "abierto" : null}>
                 <div id = {"todasLasCancionesDiv"}>
                     {todasLasCanciones ?  Array.from(todasLasCanciones.recorrerLista()).map((cancion, index) => {
-                        return <InfoSongs key = {index} cancion = {cancion} cancionesSeleccionadas = {cancionesSeleccionadas} setCancionesSeleccionadas = {setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === cancion}></InfoSongs>
+                        return <InfoSongs key = {index} user={user} cancion = {cancion} cancionesSeleccionadas = {cancionesSeleccionadas} setCancionesSeleccionadas = {setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === cancion}></InfoSongs>
                     }) : null}
                 </div>
                 
