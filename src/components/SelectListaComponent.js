@@ -1,6 +1,5 @@
-import { useState, forceUpdate, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-import readDb from "../functions/readDb"
 import { LinkedList, Node } from "../classes/LinkedList"
 import { getStorage} from "firebase/storage";
 import getAllSongs from "../functions/getAllSongs"
@@ -10,6 +9,7 @@ import ListElement from "./ListElement";
 import { FaAngleDown } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { deleteSongInList } from "../functions/getListas";
+import UserPage from "./UserPage";
 
 const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas) => {
     if (listaActual === lista){
@@ -34,7 +34,7 @@ const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActu
 
 }
 
-const SelectListaComponent = ({user, listas, setSongList, listaActual, setListaActual, setCurrentSong, setTodasLasCanciones, setListas}) => {
+const SelectListaComponent = ({user, setUser, listas, setSongList, listaActual, setListaActual, setCurrentSong, setTodasLasCanciones, setListas}) => {
     const [showdetailedInfo, setShowDetailedInfo] = useState(null)
     const [forceUpdate, setForceUpdate] = useState(0)
 
@@ -45,6 +45,7 @@ const SelectListaComponent = ({user, listas, setSongList, listaActual, setListaA
                 <div id = "selectListaComponent" className="selectListaComponent">
                 <h3>Tus listas</h3>
                 <p>Inicia sesión para ver tus listas</p>
+                <UserPage user={user} setUser={setUser}></UserPage>
                 </div>
             </>)
     }

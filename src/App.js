@@ -20,14 +20,13 @@ import Navbar from './components/Navbar';
 // Functions
 import getAllSongs from "./functions/getAllSongs"
 import getListas from './functions/getListas.js';
-import {signInWithGoogle, signOutGoogle} from './functions/auth.js';
 
 // Icons
 import { FaMusic, FaSearch } from "react-icons/fa";
 import { MdLibraryMusic } from "react-icons/md";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineAccountCircle } from "react-icons/md";
-import { FcGoogle } from "react-icons/fc";
+import UserPage from './components/UserPage.js';
 
 
 function App() {
@@ -84,22 +83,11 @@ function App() {
       <MostrarCancionesComponent user={user} todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
     </>
   }else if(tab === 2){
-    page = <SelectListaComponent user = {user} listas = {listas} setSongList = {setSongList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
+    page = <SelectListaComponent user = {user} setUser={setUser} listas = {listas} setSongList = {setSongList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
   }else if(tab === 3){
     page = <><SubirMusicComponent storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }else if(tab === 4){
-    if(!user){
-      page = <>
-          <button className="blue-btn" onClick={() => signInWithGoogle(setUser)}><FcGoogle style={{position: "relative", top:"2px"}}/> Log In</button>
-        </>
-    }else{
-      page = <>
-        <>
-          <button className='red-btn' onClick={() => signOutGoogle(setUser)}>Log Out</button>
-        </>
-      </>
-    }
-
+    page = <UserPage user = {user} setUser = {setUser}></UserPage>
   }
 
   

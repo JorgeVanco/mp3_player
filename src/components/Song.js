@@ -4,9 +4,13 @@ import {RiRepeat2Line, RiRepeatOneLine} from "react-icons/ri"
 import { doc, setDoc, getDoc, collection, Timestamp} from "firebase/firestore";
 import {db} from "../firebase_files/firebase_app"
 
+import { LinkedList} from "../classes/LinkedList";
+
 import { FaPlay, FaPause, FaPlayCircle, FaPauseCircle } from "react-icons/fa";
 import { TbRewindForward10, TbRewindBackward10 } from "react-icons/tb";
 import { MdSkipPrevious, MdSkipNext } from "react-icons/md";
+import { FaShuffle } from "react-icons/fa6";
+import { IoShuffle } from "react-icons/io5";
 
 const updateEscuchas = async(song_name, song_author) => {
     const dateObj = new Date()
@@ -133,7 +137,14 @@ const progressBarClick = (e, audioRef, progressBarRef) => {
     audioRef.currentTime = audioRef.duration * percentage
 }
 
-const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList}) => {
+const shuffle = (e, songList, setCurrentSong) => {
+    e.stopPropagation()
+
+    songList.shuffleList()
+    setCurrentSong(songList.head)
+}
+
+const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList, setSongList, setTodasLasCanciones}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
@@ -207,6 +218,7 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
 
             {!smallCard ? 
                 <>
+                    <IoShuffle size={30} className="shuffleIcon" onClick={(e) => shuffle(e, songList, setCurrentSong)}></IoShuffle>
                     <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
                     {
                         repeatState === 2 ? <RiRepeatOneLine size={28} className="repeatIcon" onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={{color:"green"}}></RiRepeatOneLine>:

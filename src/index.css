@@ -220,6 +220,10 @@ button{
   color: rgb(223, 223, 223);
   font-weight: bold;
   background-color: #285467;
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -50%);
 }
 
 .blue-btn:hover{
@@ -376,7 +380,7 @@ button{
 
 @media only screen and (max-width: 600px) {
   .seleccionaCancionDivButton{
-    transform: translateY(25%);
+    transform: translateY(0%);
   }
 
   /* .tranlateY25mobile{
@@ -700,8 +704,18 @@ input {
   bottom: 9.25%;
 }
 
+.shuffleIcon{
+  cursor:pointer;
+  position: absolute;
+  left: 20%;
+  bottom: 9.25%;
+}
+
 @media only screen and (max-width: 600px) {
   .repeatIcon{
+    bottom: 6.5%;
+  }
+  .shuffleIcon{
     bottom: 6.5%;
   }
   .listDeleteList{
