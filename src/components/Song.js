@@ -6,6 +6,8 @@ import {db} from "../firebase_files/firebase_app"
 
 import { LinkedList} from "../classes/LinkedList";
 
+import { playSong, pauseSong } from "../functions/songFunctions";
+
 import { FaPlay, FaPause, FaPlayCircle, FaPauseCircle } from "react-icons/fa";
 import { TbRewindForward10, TbRewindBackward10 } from "react-icons/tb";
 import { MdSkipPrevious, MdSkipNext } from "react-icons/md";
@@ -101,19 +103,7 @@ const changeRepeatState = (e, setRepeatState, repeatState) => {
 
 }
 
-const pauseSong = (e, audioRef, setIsPaused) => {
-    e.stopPropagation();
-    audioRef.pause()
-    setIsPaused(true)
-}
 
-const playSong = (e, audioRef, setIsPaused) => {
-    e.stopPropagation();
-    audioRef.play()
-    setIsPaused(false)
-    
-
-}
 
 const toggleSmallCard = (smallCard, setSmallCard, setTab) => {
     if (smallCard){
@@ -144,13 +134,12 @@ const shuffle = (e, songList, setCurrentSong) => {
     setCurrentSong(songList.head)
 }
 
-const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList, setSongList, setTodasLasCanciones}) => {
+const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList, setSongList, setTodasLasCanciones, audioRef, setAudioRef, isPaused, setIsPaused}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
     // const audioRef = useRef(null);
-    const [audioRef, setAudioRef] = useState(null)
-    const [isPaused, setIsPaused] = useState(false)
+    
     const [percentage, setPercentage] = useState(0)
     const progressBarRef = useRef(null)
 

@@ -112,6 +112,18 @@ class LinkedList {
         this.closeLoop()
     }
 
+    getNode(node){
+        let currentNode = this.head
+        while (currentNode != null){
+            if (currentNode.songName === node.songName && currentNode.author === node.author){
+                return currentNode
+            }
+            currentNode = currentNode.next
+        }
+        return null
+    
+    }
+
     * recorrerLista(){
         let node = this.head
         while (node != null){

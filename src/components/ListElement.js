@@ -8,7 +8,7 @@ const ListElement = ({listas, lista, onClickEvent, isPlaying, setShowDetailedInf
             <p className="numberSongs">{Object.keys(listas[lista]).length} canciones</p>
 
             <FaRegTrashAlt className="listDeleteList delete" onClick={(e) => {deleteList(lista, listas, user);e.stopPropagation();setForceUpdate(1)}}></FaRegTrashAlt>
-            {isPlaying ? <FaPauseCircle  onClick = {onClickEvent} size={25} className="listControlIcon"></FaPauseCircle> : <FaPlayCircle size={25}  onClick = {onClickEvent} className="listControlIcon"></FaPlayCircle>}
+            {isPlaying ? <FaPauseCircle color="#00eeff" onClick = {onClickEvent} size={30} className="listControlIcon"></FaPauseCircle> : <FaPlayCircle size={30}  onClick = {onClickEvent} className="listControlIcon"></FaPlayCircle>}
 
         </div>
     )

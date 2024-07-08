@@ -42,6 +42,9 @@ function App() {
   const [user, setUser] = useState(null)
   const [smallCard, setSmallCard] = useState(false)
 
+  const [audioRef, setAudioRef] = useState(null)
+  const [isPaused, setIsPaused] = useState(false)
+
   useEffect(()=>{
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
   }, [reload, storage])
@@ -83,7 +86,7 @@ function App() {
       <MostrarCancionesComponent user={user} todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
     </>
   }else if(tab === 2){
-    page = <SelectListaComponent user = {user} setUser={setUser} listas = {listas} setSongList = {setSongList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
+    page = <SelectListaComponent user = {user} currentSong={currentSong} setUser={setUser} listas = {listas} setSongList = {setSongList} songList = {songList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas} audioRef = {audioRef} setIsPaused={setIsPaused} isPaused={isPaused}></SelectListaComponent>
   }else if(tab === 3){
     page = <><SubirMusicComponent storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }else if(tab === 4){
@@ -104,7 +107,7 @@ function App() {
         {page}
 
 
-        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload} setTab ={setTab}></Song>
+        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload} setTab ={setTab} audioRef={audioRef} setAudioRef={setAudioRef} isPaused={isPaused} setIsPaused={setIsPaused}></Song>
 
       
         <Navbar setTab = {setTab}>

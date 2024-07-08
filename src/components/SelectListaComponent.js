@@ -8,33 +8,57 @@ import ListElement from "./ListElement";
 
 import { FaAngleDown } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { FaPlayCircle, FaPauseCircle } from "react-icons/fa";
+
 import { deleteSongInList } from "../functions/getListas";
 import UserPage from "./UserPage";
+import { pauseSong, playSong } from "../functions/songFunctions";
 
-const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActual,setCurrentSong, setTodasLasCanciones, setListas) => {
-    if (listaActual === lista){
-        lista = null;
-    }
+const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActual, setCurrentSong, setTodasLasCanciones, setListas) => {
+    
+    return new Promise((resolve, reject) => {
+        if (listaActual === lista){
+            lista = null;
+        }
 
-    setListaActual(lista)
-    let newList = new LinkedList();
-    if (!lista){
-        const storage = getStorage();
-        getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
+        setListaActual(lista)
+        let newList = new LinkedList();
+        if (!lista){
+            const storage = getStorage();
+            getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
 
-    }else{
-        let songs = listas[lista]
-        console.log(songs)
-        Object.keys(songs).forEach(song => {
-            newList.addNode(new Node(songs[song].bucket, songs[song].path, songs[song].url))
-        })
-        newList.closeLoop()
-        setSongList(newList)
-    }
+        }else{
+            let songs = listas[lista]
+            Object.keys(songs).forEach(song => {
+                newList.addNode(new Node(songs[song].bucket, songs[song].path, songs[song].url))
+            })
+            newList.closeLoop()
+            setSongList(newList)
+            
+        }
+        resolve(newList)
+    })
 
 }
 
-const SelectListaComponent = ({user, setUser, listas, setSongList, listaActual, setListaActual, setCurrentSong, setTodasLasCanciones, setListas}) => {
+const playSongLista = async(e, song, currentSong, setCurrentSong, setListaActual, lista, listas, listaActual, songList, setSongList, setTodasLasCanciones, setListas, audioRef, setIsPaused) => {
+    let newSongList = songList;
+    if (lista != listaActual){
+        setListaActual(lista);
+        newSongList = await handleChangeLista(lista, listas, listaActual, setSongList, setListaActual, setCurrentSong, setTodasLasCanciones, setListas);
+    }
+
+    if (currentSong.songName === song.songName && currentSong.author === song.author){
+        playSong(e, audioRef, setIsPaused)
+    }else{
+        let newSong = newSongList.getNode(song)
+        setCurrentSong(newSong)
+    }
+
+
+}
+
+const SelectListaComponent = ({user, setUser, listas, songList, setSongList, listaActual, setListaActual, setCurrentSong, setTodasLasCanciones, setListas, currentSong, audioRef, setIsPaused, isPaused}) => {
     const [showdetailedInfo, setShowDetailedInfo] = useState(null)
     const [forceUpdate, setForceUpdate] = useState(0)
 
@@ -70,7 +94,10 @@ const SelectListaComponent = ({user, setUser, listas, setSongList, listaActual, 
                             <p className="numberSongs">
                                 {listas[showdetailedInfo][song].author}
                             </p>
-                            <FaRegTrashAlt className="listDeleteSong delete" onClick={() => {deleteSongInList(showdetailedInfo, listas[showdetailedInfo], song, user);setForceUpdate(1)}}></FaRegTrashAlt>
+                            <FaRegTrashAlt className="listDeleteList delete" onClick={() => {deleteSongInList(showdetailedInfo, listas[showdetailedInfo], song, user);setForceUpdate(1)}}></FaRegTrashAlt>
+                            {currentSong.songName == listas[showdetailedInfo][song].songName && currentSong.author === listas[showdetailedInfo][song].author && !isPaused ?
+                                <FaPauseCircle color="#00eeff" onClick = {(e) => pauseSong(e, audioRef, setIsPaused)} size={30} className="listControlIcon"></FaPauseCircle> 
+                                : <FaPlayCircle size={30}  onClick = {(e) => playSongLista(e, listas[showdetailedInfo][song], currentSong, setCurrentSong, setListaActual, showdetailedInfo, listas, listaActual, songList, setSongList, setTodasLasCanciones, setListas, audioRef, setIsPaused)} className="listControlIcon"></FaPlayCircle>}
                         </div>
                     )
                 })}
