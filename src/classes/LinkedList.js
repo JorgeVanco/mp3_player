@@ -1,3 +1,5 @@
+import { shuffleArray } from "../functions/utils"
+
 class Node {
     constructor(bucket, path, url) {
         this.bucket = bucket
@@ -95,15 +97,8 @@ class LinkedList {
             nodes[nodes.length - 1].prev = null 
         }
 
+        shuffleArray(nodes)
 
-        let currentIndex = nodes.length, randomIndex;
-        while (currentIndex !== 0){
-            randomIndex = Math.floor(Math.random() * currentIndex)
-            currentIndex--
-
-            [nodes[currentIndex], nodes[randomIndex]] = [nodes[randomIndex], nodes[currentIndex]]
-        }
-        // return nodes
         this.head = null;
         nodes.forEach(node => {
             this.addNode(node)

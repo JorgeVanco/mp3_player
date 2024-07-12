@@ -1,11 +1,11 @@
 import { db } from "../firebase_files/firebase_app";
-import { doc, getDoc, updateDoc, deleteField } from "firebase/firestore";
+import { doc, updateDoc, deleteField } from "firebase/firestore";
+import { readDocument } from "./readDb";
 
 const getListas = async(user, setListas) => {
     if (user){
 
-        const listasRef = doc(db, user.email, "listas")
-        const listasSnap = await getDoc(listasRef);
+        const listasSnap = await readDocument(user.email, "listas")
 
         if(listasSnap.exists()){
             setListas(listasSnap.data())
