@@ -43,7 +43,7 @@ const handleChangeLista = (lista, listas, listaActual, setSongList, setListaActu
 
 const playSongLista = async(e, song, currentSong, setCurrentSong, setListaActual, lista, listas, listaActual, songList, setSongList, setTodasLasCanciones, setListas, audioRef, setIsPaused) => {
     let newSongList = songList;
-    if (lista != listaActual){
+    if (lista !== listaActual){
         setListaActual(lista);
         newSongList = await handleChangeLista(lista, listas, listaActual, setSongList, setListaActual, setCurrentSong, setTodasLasCanciones, setListas);
     }
@@ -95,7 +95,7 @@ const SelectListaComponent = ({user, setUser, listas, songList, setSongList, lis
                                 {listas[showdetailedInfo][song].author}
                             </p>
                             <FaRegTrashAlt className="listDeleteList delete" onClick={() => {deleteSongInList(showdetailedInfo, listas[showdetailedInfo], song, user);setForceUpdate(1)}}></FaRegTrashAlt>
-                            {currentSong.songName == listas[showdetailedInfo][song].songName && currentSong.author === listas[showdetailedInfo][song].author && !isPaused ?
+                            {currentSong.songName === listas[showdetailedInfo][song].songName && currentSong.author === listas[showdetailedInfo][song].author && !isPaused ?
                                 <FaPauseCircle color="#00eeff" onClick = {(e) => pauseSong(e, audioRef, setIsPaused)} size={30} className="listControlIcon"></FaPauseCircle> 
                                 : <FaPlayCircle size={30}  onClick = {(e) => playSongLista(e, listas[showdetailedInfo][song], currentSong, setCurrentSong, setListaActual, showdetailedInfo, listas, listaActual, songList, setSongList, setTodasLasCanciones, setListas, audioRef, setIsPaused)} className="listControlIcon"></FaPlayCircle>}
                         </div>

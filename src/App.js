@@ -107,7 +107,7 @@ function App() {
         {page}
 
 
-        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload} setTab ={setTab} audioRef={audioRef} setAudioRef={setAudioRef} isPaused={isPaused} setIsPaused={setIsPaused}></Song>
+        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload} setTab ={setTab} audioRef={audioRef} setAudioRef={setAudioRef} isPaused={isPaused} setIsPaused={setIsPaused} user = {user}></Song>
 
       
         <Navbar setTab = {setTab}>
