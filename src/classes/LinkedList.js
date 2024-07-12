@@ -44,17 +44,28 @@ class LinkedList {
         this.head = head
     }
 
-    addNode(newNode){
+    addNode(newNode){ 
         let node = this.head
+
         if (node == null){
             this.head = newNode
-            return
+
+        }else{
+            if (this.head.prev !== null){
+                node = this.head.prev
+            }
+            
+            node.next = newNode
+            newNode.prev = node
+            newNode.next = null
+            this.head.prev = newNode
         }
-        while (node.next != null){
-            node = node.next
-        }
-        node.next = newNode
-        newNode.prev = node
+
+    }
+
+    closeLoop(){
+        // this.head.prev.next = this.head
+        this.head.prev = null
     }
 
     printList(){
@@ -62,6 +73,55 @@ class LinkedList {
         while (node != null){
             node = node.next
         }
+    }
+
+    getLength(){
+        let node = this.head
+        let length = 0
+        while (node != null){
+            length++
+            node = node.next
+        }
+        return length
+    }
+
+    shuffleList(){
+        let node = this.head
+        let nodes = []
+        while (node != null){
+            nodes.push(node)
+            node = node.next
+            nodes[nodes.length - 1].next = null
+            nodes[nodes.length - 1].prev = null 
+        }
+
+
+        let currentIndex = nodes.length, randomIndex;
+        while (currentIndex !== 0){
+            randomIndex = Math.floor(Math.random() * currentIndex)
+            currentIndex--
+
+            [nodes[currentIndex], nodes[randomIndex]] = [nodes[randomIndex], nodes[currentIndex]]
+        }
+        // return nodes
+        this.head = null;
+        nodes.forEach(node => {
+            this.addNode(node)
+        })
+
+        this.closeLoop()
+    }
+
+    getNode(node){
+        let currentNode = this.head
+        while (currentNode != null){
+            if (currentNode.songName === node.songName && currentNode.author === node.author){
+                return currentNode
+            }
+            currentNode = currentNode.next
+        }
+        return null
+    
     }
 
     * recorrerLista(){

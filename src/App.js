@@ -19,14 +19,14 @@ import Navbar from './components/Navbar';
 
 // Functions
 import getAllSongs from "./functions/getAllSongs"
-import {signInWithGoogle, signOutGoogle} from './functions/auth.js';
+import getListas from './functions/getListas.js';
 
 // Icons
 import { FaMusic, FaSearch } from "react-icons/fa";
 import { MdLibraryMusic } from "react-icons/md";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineAccountCircle } from "react-icons/md";
-import { FcGoogle } from "react-icons/fc";
+import UserPage from './components/UserPage.js';
 
 
 function App() {
@@ -42,6 +42,9 @@ function App() {
   const [user, setUser] = useState(null)
   const [smallCard, setSmallCard] = useState(false)
 
+  const [audioRef, setAudioRef] = useState(null)
+  const [isPaused, setIsPaused] = useState(false)
+
   useEffect(()=>{
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
   }, [reload, storage])
@@ -49,6 +52,10 @@ function App() {
   useEffect(()=> {
     setCurrentSong(songList.head)
   }, [songList])
+
+  useEffect(() => {
+    getListas(user, setListas)
+  }, [user])
 
   useEffect(() => {
     if (!currentSong){
@@ -75,26 +82,15 @@ function App() {
           </>
   }else if(tab === 1){
     page = <>
-      <Busqueda canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
-      <MostrarCancionesComponent todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
+      <Busqueda user = {user} canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
+      <MostrarCancionesComponent user={user} todasLasCanciones = {todasLasCanciones} listas = {listas} setListas = {setListas} nodeConverter={nodeConverter} setCurrentSong={setCurrentSong} currentSong={currentSong} setReload = {setReload}></MostrarCancionesComponent>
     </>
   }else if(tab === 2){
-    page = <SelectListaComponent listas = {listas} setSongList = {setSongList} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas}></SelectListaComponent>
+    page = <SelectListaComponent user = {user} currentSong={currentSong} setUser={setUser} listas = {listas} setSongList = {setSongList} songList = {songList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas} audioRef = {audioRef} setIsPaused={setIsPaused} isPaused={isPaused}></SelectListaComponent>
   }else if(tab === 3){
     page = <><SubirMusicComponent storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }else if(tab === 4){
-    if(!user){
-      page = <>
-          <button className="blue-btn" onClick={() => signInWithGoogle(setUser)}><FcGoogle style={{position: "relative", top:"2px"}}/> Log In</button>
-        </>
-    }else{
-      page = <>
-        <>
-          <button className='red-btn' onClick={() => signOutGoogle(setUser)}>Log Out</button>
-        </>
-      </>
-    }
-
+    page = <UserPage user = {user} setUser = {setUser}></UserPage>
   }
 
   
@@ -111,7 +107,7 @@ function App() {
         {page}
 
 
-        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload} setTab ={setTab}></Song>
+        <Song key = {currentSong ? currentSong.url : ""} smallCard = {smallCard} setSmallCard={setSmallCard} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload} setTab ={setTab} audioRef={audioRef} setAudioRef={setAudioRef} isPaused={isPaused} setIsPaused={setIsPaused} user = {user}></Song>
 
       
         <Navbar setTab = {setTab}>

@@ -26,7 +26,7 @@ const handleChange = (e, setSearchWord, canciones, setMatchedSongs) => {
 
 }
 
-const Busqueda = ({canciones, currentSong, setCurrentSong, db, listas, setListas, nodeConverter, songsToAdd, setReload}) => {
+const Busqueda = ({user, canciones, currentSong, setCurrentSong, db, listas, setListas, nodeConverter, songsToAdd, setReload}) => {
     const [cancionesSeleccionadas, setCancionesSeleccionadas] = useState([])
     const [matchedSongs, setMatchedSongs] = useState([])
     const [searchWord, setSearchWord] = useState("")
@@ -50,12 +50,12 @@ const Busqueda = ({canciones, currentSong, setCurrentSong, db, listas, setListas
             <div id="resultadosBusquedaContainer" style={searchWord.length !== 0 && matchedSongs.length !== 0 ? {height:(height + sumHeight).toString()+"em"}:null}>
                 <div id = "resultadosBusquedaDiv" style ={searchWord.length !== 0 && matchedSongs.length !== 0 ? {height:(height).toString()+"em"}:null}>
                     {searchWord.length !== 0 && matchedSongs.length !== 0 ? matchedSongs.map((song, index) => {
-                        return <InfoSongs key = {index} cancion = {song} cancionesSeleccionadas={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === song}></InfoSongs>
+                        return <InfoSongs key = {index} user = {user} cancion = {song} cancionesSeleccionadas={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === song}></InfoSongs>
                     }): null} 
                 </div>
                     {cancionesSeleccionadas.length !== 0 ? 
                         <>
-                            <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setHacerGrande={setHacerGrande} setSearchWord = {setSearchWord} setReload = {setReload}></AddListaForm>
+                            <AddListaForm user={user} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setHacerGrande={setHacerGrande} setSearchWord = {setSearchWord} setReload = {setReload}></AddListaForm>
                             <button className = "seleccionaCancionDivButton eliminarTodasSelecciones" onClick={() => setCancionesSeleccionadas([])}>Eliminar selecciones</button>
                         </>
                         : <div id = "seleccionaCancionDiv">
