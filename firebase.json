@@ -15,7 +15,7 @@
   },
   "hosting": {
     "public": "build",
-    "target": "prueba-audio-494e7",
+    "target": "spotty-joly",
     "ignore": [
       "firebase.json",
       "**/.*",
