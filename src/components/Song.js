@@ -178,6 +178,21 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
                 <p id = "songAuthor">{currentSong.author}</p>
             </div>
 
+            {smallCard ?
+                <div style={{display:"inline-block", height:"100%", width:"45%"}}>
+                    <div className="smallCardControls">
+                        {
+                            repeatState === 2 ? <RiRepeatOneLine size={28} onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={{color:"green"}}></RiRepeatOneLine>:
+                            <RiRepeat2Line size={28}  onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={repeatState ? {color:"green"} : null}></RiRepeat2Line>
+                        }
+                        <MdSkipNext size = {35} onClick={(e) => handleNext(e, currentSong, setCurrentSong, audioRef, songList)}></MdSkipNext>
+                        {isPaused ? <FaPlay className="playButton smallCardPlayButton" onClick={(e) => playSong(e, audioRef, setIsPaused)}></FaPlay>:
+                        !isPaused ? <FaPause className="playButton smallCardPlayButton" onClick={(e) => pauseSong(e, audioRef,setIsPaused)}></FaPause>:
+                        null}
+                    </div>
+                </div>
+            :
+            null}
 
             <div className={smallCard ? "progressBarContainerSmallCard" :"progressBarContainer"}>
                 <div className="progressBar" ref = {progressBarRef} onClick={(e) => progressBarClick(e, audioRef, progressBarRef)}>
@@ -185,19 +200,20 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
                 </div>
             </div>
 
-            <div className= {"controlSongDiv"}>
+
+            <div className= {smallCard ? "hidden" : "controlSongDiv"}>
                 {!smallCard ? <TbRewindBackward10 size = {42} className="rewindButton" onClick={(e) => rewind(e, audioRef, -10)}></TbRewindBackward10 >: null}
                 {!smallCard ? <MdSkipPrevious  size = {42} className="skipButton skipPrevious" onClick={(e) => handlePrev(e, currentSong, setCurrentSong, audioRef)}></MdSkipPrevious >: null}
                 
                 {
-                    smallCard && isPaused ? <FaPlay className="playButton smallCardPlayButton" onClick={(e) => playSong(e, audioRef, setIsPaused)}></FaPlay>:
-                    smallCard && !isPaused ? <FaPause className="playButton smallCardPlayButton" onClick={(e) => pauseSong(e, audioRef,setIsPaused)}></FaPause>:
-                    isPaused ? <FaPlayCircle size={42} className="playButton" onClick={(e) => playSong(e, audioRef, setIsPaused)}></FaPlayCircle>:
-                    <FaPauseCircle size={42} className="playButton" onClick={(e) => pauseSong(e, audioRef,setIsPaused)}></FaPauseCircle>
+                    !smallCard && isPaused? <FaPlayCircle size={42} className="playButton" onClick={(e) => playSong(e, audioRef, setIsPaused)}></FaPlayCircle>:
+                    !smallCard && !isPaused? <FaPauseCircle size={42} className="playButton" onClick={(e) => pauseSong(e, audioRef,setIsPaused)}></FaPauseCircle>:
+                    null
                 }
 
                 <audio ref={audioRefCallback}  key = {currentSong.url} autoPlay  onPlay={() => setIsPaused(false)} onPause={() => setIsPaused(true)} onEnded={(e) => handleEnd(e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef, songList)}><source src = {currentSong.url} type = "audio/mpeg"></source></audio>
                 {!smallCard ? <MdSkipNext size = {42} className="skipButton skipNext" onClick={(e) => handleNext(e, currentSong, setCurrentSong, audioRef, songList)}></MdSkipNext>: null}
+                {/* {!smallCard ? <MdSkipNext size = {42} className="skipButton skipNext" onClick={(e) => handleNext(e, currentSong, setCurrentSong, audioRef, songList)}></MdSkipNext>: null} */}
                 {!smallCard ? <TbRewindForward10 size = {42} className="rewindButton" onClick={(e) => rewind(e, audioRef, 10)}></TbRewindForward10>: null}
             </div>
 
@@ -207,12 +223,14 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
                     <IoShuffle size={30} className="shuffleIcon" onClick={(e) => shuffle(e, songList, setCurrentSong)}></IoShuffle>
                     <AddListaForm db = {db} user = {user} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
                     {
-                        repeatState === 2 ? <RiRepeatOneLine size={28} className="repeatIcon" onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={{color:"green"}}></RiRepeatOneLine>:
-                        <RiRepeat2Line size={28} className="repeatIcon" onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={repeatState ? {color:"green"} : null}></RiRepeat2Line>
+                        repeatState === 2 ? <RiRepeatOneLine size={28} className={!smallCard ? "repeatIcon": "repeatIcon repeatIconSmall"} onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={{color:"green"}}></RiRepeatOneLine>:
+                        <RiRepeat2Line size={28} className={!smallCard ? "repeatIcon": "repeatIcon repeatIconSmall"} onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={repeatState ? {color:"green"} : null}></RiRepeat2Line>
                     }
                 </>
                 : null
             }
+
+            
 
             
         </div>

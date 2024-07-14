@@ -2,11 +2,11 @@
 import './App.css';
 import { Helmet } from 'react-helmet';
 import {useEffect, useState } from 'react';
+import { useSwipeable } from 'react-swipeable';
 
 // Firebase
 import {getStorage} from "firebase/storage";
 import {db} from "./firebase_files/firebase_app"
-import { signOut } from 'firebase/auth';
 
 // Components
 import Song from "./components/Song.js"
@@ -16,18 +16,39 @@ import MostrarCancionesComponent from './components/MostrarCancionesComponent';
 import Busqueda from './components/Busqueda';
 import SubirMusicComponent from './components/SubirMusicComponent';
 import Navbar from './components/Navbar';
+import UserPage from './components/UserPage.js';
 
 // Functions
 import getAllSongs from "./functions/getAllSongs"
 import getListas from './functions/getListas.js';
+import { readDocument } from './functions/readDb';
+import { shuffleArray } from './functions/utils.js';
 
 // Icons
 import { FaMusic, FaSearch } from "react-icons/fa";
 import { MdLibraryMusic } from "react-icons/md";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineAccountCircle } from "react-icons/md";
-import UserPage from './components/UserPage.js';
+import { IoMdExpand, IoMdContract } from "react-icons/io";
+import { doc, updateDoc } from 'firebase/firestore';
 
+const changeExpanded = (newValue, idx, images) => {
+  const imagesRef = doc(db, 'images', 'autorizados');
+
+  images[idx].expanded = newValue
+  updateDoc(imagesRef, {
+    images: images
+  })
+  return images
+}
+
+const handleImageChange = (newIdx, oldIdx, setImageIdx, images, expanded, setBackgroundImages) => {
+  setImageIdx(newIdx)
+
+  if (expanded !== null && expanded != images[oldIdx].expanded){
+    changeExpanded(expanded, oldIdx, images)
+  }
+}
 
 function App() {
   const [currentSong, setCurrentSong] = useState(null)
@@ -45,6 +66,21 @@ function App() {
   const [audioRef, setAudioRef] = useState(null)
   const [isPaused, setIsPaused] = useState(false)
 
+  
+  const [imageIdx, setImageIdx] = useState(0)
+  const [imageIdxLength, setImageIdxLength] = useState(0)
+  const [background, setBackground] = useState(null)
+  const [backgroundImages, setBackgroundImages] = useState([])
+  const [expanded, setExpanded] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
+  const handlers = useSwipeable({
+    onSwipedRight: () => handleImageChange(((imageIdx - 1) % imageIdxLength + imageIdxLength) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
+    onSwipedLeft: () => handleImageChange((imageIdx + 1) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
+  })
+
+  const timeImages = 15;
+
   useEffect(()=>{
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
   }, [reload, storage])
@@ -55,7 +91,42 @@ function App() {
 
   useEffect(() => {
     getListas(user, setListas)
+
+    const fetch = async() => {
+      if (user){
+        let autorizedUsers = await readDocument("images", "autorizados")
+        if (autorizedUsers.exists() && autorizedUsers.data().users.includes(user.email)){
+          setIsAuthorized(true)
+          let images = autorizedUsers.data().images
+          setImageIdxLength(images.length)
+          shuffleArray(images)
+          setBackgroundImages(images)
+          setImageIdx(0)
+          setBackground(images[0].url)
+          setExpanded(images[0].expanded)
+        }
+      }else{
+        setBackground(null)
+        setBackgroundImages([])
+      }
+    }
+    fetch();
   }, [user])
+
+  useEffect(() => {
+    let newExpanded = null;
+    if (backgroundImages.length !== 0){
+      setBackground(backgroundImages[imageIdx].url)
+      newExpanded = backgroundImages[imageIdx].expanded
+      setExpanded(newExpanded)
+    }
+
+    let timer = setTimeout(() => {
+      handleImageChange((imageIdx + 1) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, newExpanded, setBackgroundImages)
+      
+    }, timeImages * 1000)
+    return () => clearTimeout(timer)
+  }, [imageIdx])
 
   useEffect(() => {
     if (!currentSong){
@@ -72,14 +143,12 @@ function App() {
 
   let page;
   if (tab === 0){
-    page = <>
-            
+    page = <div className = {expanded ? "background cover" : "background contain"} style={{backgroundImage:"url(" + background + ")"}} {...handlers}>
+            {expanded ? 
+            <IoMdContract size={24} className={background ? "changeImageSize": "hidden"} onClick={() => {setExpanded(false)}}></IoMdContract>
+            : <IoMdExpand size={24} className={background ? "changeImageSize": "hidden"} onClick={() => {setExpanded(true)}}></IoMdExpand>}
             {listaActual ? <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>: null}
-            
-            {/* <Song key = {currentSong ? currentSong.url : ""} currentSong = {currentSong} setCurrentSong={setCurrentSong} songList = {songList} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload = {setReload}></Song> */}
-
-            
-          </>
+          </div>
   }else if(tab === 1){
     page = <>
       <Busqueda user = {user} canciones = {todasLasCanciones} currentSong={currentSong} setCurrentSong={setCurrentSong} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setReload={setReload}></Busqueda>
@@ -88,7 +157,7 @@ function App() {
   }else if(tab === 2){
     page = <SelectListaComponent user = {user} currentSong={currentSong} setUser={setUser} listas = {listas} setSongList = {setSongList} songList = {songList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas} audioRef = {audioRef} setIsPaused={setIsPaused} isPaused={isPaused}></SelectListaComponent>
   }else if(tab === 3){
-    page = <><SubirMusicComponent storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
+    page = <><SubirMusicComponent isAuthorized={isAuthorized} storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }else if(tab === 4){
     page = <UserPage user = {user} setUser = {setUser}></UserPage>
   }
@@ -97,11 +166,11 @@ function App() {
   
 
   return (
-    <div className="App">
+    <div className="App" {...handlers}>
       <Helmet>
           <title>{ title }</title>
       </Helmet>
-      <header className="App-header">
+      <div  className="App-header">
 
 
         {page}
@@ -118,7 +187,7 @@ function App() {
           <div><MdOutlineAccountCircle color = {tab === 4? "#00eeff" : "white"}></MdOutlineAccountCircle></div>
         </Navbar>
 
-      </header>
+      </div>
     </div>
   );
 }

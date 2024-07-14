@@ -31,6 +31,7 @@ code {
 }
 
 .songCard{
+  background-color: #282c349a;
   padding: .5em;
   border-radius: 10px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -42,13 +43,16 @@ code {
 }
 
 .smallCard{
-
-  padding: 0em;
+  background-color: #282c349a;
+  display: flex;
+  align-items: center;
+  padding: 0.7em;
   width:100%;
   box-shadow: 0 -4px 8px 0 rgba(0, 0, 0, 0.2), 0 -6px 20px 0 rgba(0, 0, 0, 0.19);
   position:fixed;
   bottom:3em;
   text-align: left;
+
 }
 
 .smallCard p{
@@ -61,9 +65,7 @@ code {
 .smallCard > div:nth-child(1){
   display:inline-block;
   position:relative;
-  width:75%;
-  bottom: 25%;
-  transform: translate(0, 25%);
+  width:55%;
   overflow:hidden;
   text-overflow: ellipsis;
 }
@@ -71,12 +73,19 @@ code {
 .playButton{
   cursor:pointer;
 }
-
+/* 
 .smallCardPlayButton{
   position:absolute;
   top: 50%;
   right:5%;
   transform: translate(-50%, -50%);
+} */
+
+.smallCardControls{
+  display:flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -119,6 +128,13 @@ code {
   bottom: 6.5%;
   
 }
+
+/* .skipButtonSmall{
+  position:absolute;
+  top: 50%;
+  right: 10%;
+  transform: translate(-50%, -50%);
+} */
 
 .rewindButton{
   height: 100%;
@@ -211,7 +227,10 @@ button{
 
 #subirMusicToggleButton{
   position: absolute;
+}
 
+#subirImageToggleButton{
+  top:60%;
 }
 
 .blue-btn{
@@ -704,6 +723,14 @@ input {
   bottom: 9.25%;
 }
 
+.repeatIconSmall{
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  transform: translate(-50%, -50%);
+
+}
+
 .shuffleIcon{
   cursor:pointer;
   position: absolute;
@@ -732,7 +759,8 @@ input {
   width: 100%;
   height: 3em;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px 4px;
-  background-color: rgba(0, 0, 0, 0.116);
+  /* background-color: rgba(0, 0, 0, 0.116); */
+  background-color: #282c349a;
   z-index: 999;
 }
 
@@ -786,4 +814,33 @@ input {
   border-radius: 9999px;
   height: 100%;
   background-color: #00eeff;
+}
+
+/* Background */
+.background {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat; /* Optional: to prevent repeating */
+  background-position: center; /* Optional: to center the image */
+}
+
+.contain{
+  background-size: contain;
+}
+
+.cover{
+  background-size: cover;
+}
+
+.hidden{
+  display: none;
+}
+
+.changeImageSize{
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  color:rgba(255, 255, 255, 0.7);
 }
