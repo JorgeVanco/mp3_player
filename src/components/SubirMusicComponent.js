@@ -60,9 +60,9 @@ const handleSubirImagenes = async (storage, setSubirImagenes) => {
 
                 // Update the images document with the new image
                 try{
-                    updateDoc(imagesRef, {images: arrayUnion(downloadURL)});
+                    updateDoc(imagesRef, {images: arrayUnion({url:downloadURL, expanded: false})});
                 }catch (e){
-                    setDoc(imagesRef, {images: [downloadURL]});
+                    setDoc(imagesRef, {images: [{url: downloadURL, expanded: false}]});
                     console.log(e)
                 }
 

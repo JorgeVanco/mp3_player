@@ -2,6 +2,7 @@
 import './App.css';
 import { Helmet } from 'react-helmet';
 import {useEffect, useState } from 'react';
+import { useSwipeable } from 'react-swipeable';
 
 // Firebase
 import {getStorage} from "firebase/storage";
@@ -15,21 +16,39 @@ import MostrarCancionesComponent from './components/MostrarCancionesComponent';
 import Busqueda from './components/Busqueda';
 import SubirMusicComponent from './components/SubirMusicComponent';
 import Navbar from './components/Navbar';
+import UserPage from './components/UserPage.js';
 
 // Functions
 import getAllSongs from "./functions/getAllSongs"
 import getListas from './functions/getListas.js';
 import { readDocument } from './functions/readDb';
+import { shuffleArray } from './functions/utils.js';
 
 // Icons
 import { FaMusic, FaSearch } from "react-icons/fa";
 import { MdLibraryMusic } from "react-icons/md";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineAccountCircle } from "react-icons/md";
-import UserPage from './components/UserPage.js';
-import { shuffleArray } from './functions/utils.js';
-import { useSwipeable } from 'react-swipeable';
+import { IoMdExpand, IoMdContract } from "react-icons/io";
+import { doc, updateDoc } from 'firebase/firestore';
 
+const changeExpanded = (newValue, idx, images) => {
+  const imagesRef = doc(db, 'images', 'autorizados');
+
+  images[idx].expanded = newValue
+  updateDoc(imagesRef, {
+    images: images
+  })
+  return images
+}
+
+const handleImageChange = (newIdx, oldIdx, setImageIdx, images, expanded, setBackgroundImages) => {
+  setImageIdx(newIdx)
+
+  if (expanded !== null && expanded != images[oldIdx].expanded){
+    changeExpanded(expanded, oldIdx, images)
+  }
+}
 
 function App() {
   const [currentSong, setCurrentSong] = useState(null)
@@ -47,19 +66,20 @@ function App() {
   const [audioRef, setAudioRef] = useState(null)
   const [isPaused, setIsPaused] = useState(false)
 
-  const handlers = useSwipeable({
-    onSwipedRight: () => setImageIdx(((imageIdx - 1) % imageIdxLength + imageIdxLength) % imageIdxLength),
-    onSwipedLeft: () => setImageIdx((imageIdx + 1) % imageIdxLength),
-  })
-
+  
   const [imageIdx, setImageIdx] = useState(0)
   const [imageIdxLength, setImageIdxLength] = useState(0)
   const [background, setBackground] = useState(null)
   const [backgroundImages, setBackgroundImages] = useState([])
-
+  const [expanded, setExpanded] = useState(false)
   const [isAuthorized, setIsAuthorized] = useState(false)
 
-  const timeImages = 60;
+  const handlers = useSwipeable({
+    onSwipedRight: () => handleImageChange(((imageIdx - 1) % imageIdxLength + imageIdxLength) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
+    onSwipedLeft: () => handleImageChange((imageIdx + 1) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
+  })
+
+  const timeImages = 15;
 
   useEffect(()=>{
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
@@ -82,7 +102,8 @@ function App() {
           shuffleArray(images)
           setBackgroundImages(images)
           setImageIdx(0)
-          setBackground(images[0])
+          setBackground(images[0].url)
+          setExpanded(images[0].expanded)
         }
       }else{
         setBackground(null)
@@ -93,15 +114,18 @@ function App() {
   }, [user])
 
   useEffect(() => {
+    let newExpanded = null;
+    if (backgroundImages.length !== 0){
+      setBackground(backgroundImages[imageIdx].url)
+      newExpanded = backgroundImages[imageIdx].expanded
+      setExpanded(newExpanded)
+    }
+
     let timer = setTimeout(() => {
-      setImageIdx((imageIdx + 1) % imageIdxLength)
+      handleImageChange((imageIdx + 1) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, newExpanded, setBackgroundImages)
       
     }, timeImages * 1000)
     return () => clearTimeout(timer)
-  }, [imageIdx])
-
-  useEffect(() => {
-      setBackground(backgroundImages[imageIdx])
   }, [imageIdx])
 
   useEffect(() => {
@@ -119,10 +143,11 @@ function App() {
 
   let page;
   if (tab === 0){
-    page = <div className = "background" style={{backgroundImage:"url(" + background + ")"}} {...handlers}>
-            
+    page = <div className = {expanded ? "background cover" : "background contain"} style={{backgroundImage:"url(" + background + ")"}} {...handlers}>
+            {expanded ? 
+            <IoMdContract size={24} className={background ? "changeImageSize": "hidden"} onClick={() => {setExpanded(false)}}></IoMdContract>
+            : <IoMdExpand size={24} className={background ? "changeImageSize": "hidden"} onClick={() => {setExpanded(true)}}></IoMdExpand>}
             {listaActual ? <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>: null}
-            
           </div>
   }else if(tab === 1){
     page = <>
