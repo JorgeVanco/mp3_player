@@ -44,12 +44,15 @@ code {
 
 .smallCard{
   background-color: #282c349a;
-  padding: 0em;
+  display: flex;
+  align-items: center;
+  padding: 0.7em;
   width:100%;
   box-shadow: 0 -4px 8px 0 rgba(0, 0, 0, 0.2), 0 -6px 20px 0 rgba(0, 0, 0, 0.19);
   position:fixed;
   bottom:3em;
   text-align: left;
+
 }
 
 .smallCard p{
@@ -62,9 +65,7 @@ code {
 .smallCard > div:nth-child(1){
   display:inline-block;
   position:relative;
-  width:75%;
-  bottom: 25%;
-  transform: translate(0, 25%);
+  width:55%;
   overflow:hidden;
   text-overflow: ellipsis;
 }
@@ -72,12 +73,19 @@ code {
 .playButton{
   cursor:pointer;
 }
-
+/* 
 .smallCardPlayButton{
   position:absolute;
   top: 50%;
   right:5%;
   transform: translate(-50%, -50%);
+} */
+
+.smallCardControls{
+  display:flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -120,6 +128,13 @@ code {
   bottom: 6.5%;
   
 }
+
+/* .skipButtonSmall{
+  position:absolute;
+  top: 50%;
+  right: 10%;
+  transform: translate(-50%, -50%);
+} */
 
 .rewindButton{
   height: 100%;
@@ -706,6 +721,14 @@ input {
   position: absolute;
   right: 20%;
   bottom: 9.25%;
+}
+
+.repeatIconSmall{
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  transform: translate(-50%, -50%);
+
 }
 
 .shuffleIcon{
