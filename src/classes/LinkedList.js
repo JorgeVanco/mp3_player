@@ -1,3 +1,5 @@
+import { shuffleArray } from "../functions/utils"
+
 class Node {
     constructor(bucket, path, url) {
         this.bucket = bucket
@@ -12,7 +14,7 @@ class Node {
     formatName(path){
         let name = path.slice(0, path.length - 4)   // quita el .mp3
         name = name.replaceAll("_", " ")
-        let searchRegEx = new RegExp(/\((.*?)\)|\[(.*?)\]/)
+        let searchRegEx = new RegExp(/\((.*?)\)|\[(.*?)\]/g)
         name = name.replace(searchRegEx, "")
         name = name.trim()
         this.name =  name
@@ -44,17 +46,28 @@ class LinkedList {
         this.head = head
     }
 
-    addNode(newNode){
+    addNode(newNode){ 
         let node = this.head
+
         if (node == null){
             this.head = newNode
-            return
+
+        }else{
+            if (this.head.prev !== null){
+                node = this.head.prev
+            }
+            
+            node.next = newNode
+            newNode.prev = node
+            newNode.next = null
+            this.head.prev = newNode
         }
-        while (node.next != null){
-            node = node.next
-        }
-        node.next = newNode
-        newNode.prev = node
+
+    }
+
+    closeLoop(){
+        // this.head.prev.next = this.head
+        this.head.prev = null
     }
 
     printList(){
@@ -62,6 +75,48 @@ class LinkedList {
         while (node != null){
             node = node.next
         }
+    }
+
+    getLength(){
+        let node = this.head
+        let length = 0
+        while (node != null){
+            length++
+            node = node.next
+        }
+        return length
+    }
+
+    shuffleList(){
+        let node = this.head
+        let nodes = []
+        while (node != null){
+            nodes.push(node)
+            node = node.next
+            nodes[nodes.length - 1].next = null
+            nodes[nodes.length - 1].prev = null 
+        }
+
+        shuffleArray(nodes)
+
+        this.head = null;
+        nodes.forEach(node => {
+            this.addNode(node)
+        })
+
+        this.closeLoop()
+    }
+
+    getNode(node){
+        let currentNode = this.head
+        while (currentNode != null){
+            if (currentNode.songName === node.songName && currentNode.author === node.author){
+                return currentNode
+            }
+            currentNode = currentNode.next
+        }
+        return null
+    
     }
 
     * recorrerLista(){

@@ -4,7 +4,7 @@ import InfoSongs from './InfoSongs';
 import AddListaForm from './AddListaForm';
 
 
-const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeConverter, setCurrentSong, currentSong, setReload}) =>{
+const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeConverter, setCurrentSong, currentSong, setReload, user}) =>{
     const [mostrarCanciones, setMostrarCanciones] = useState(false)
     const [cancionesSeleccionadas, setCancionesSeleccionadas] = useState([])
     const [abrir, setAbrir] = useState(false)
@@ -30,14 +30,17 @@ const MostrarCancionesComponent = ({todasLasCanciones, listas, setListas, nodeCo
             <div id = {"mostrarCancionesContainer"} className={abrir ? "abierto" : null}>
                 <div id = {"todasLasCancionesDiv"}>
                     {todasLasCanciones ?  Array.from(todasLasCanciones.recorrerLista()).map((cancion, index) => {
-                        return <InfoSongs key = {index} cancion = {cancion} cancionesSeleccionadas = {cancionesSeleccionadas} setCancionesSeleccionadas = {setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === cancion}></InfoSongs>
+                        return <InfoSongs key = {index} user={user} cancion = {cancion} cancionesSeleccionadas = {cancionesSeleccionadas} setCancionesSeleccionadas = {setCancionesSeleccionadas} setCurrentSong={setCurrentSong} isPlaying={currentSong === cancion}></InfoSongs>
                     }) : null}
                 </div>
                 
 
                 {cancionesSeleccionadas.length !== 0 ? 
-                    <AddListaForm db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setAbrir={setAbrir} setHacerGrande = {setHacerGrande} setReload = {setReload}></AddListaForm>
-                    :<div id = "seleccionaCancionDiv">
+                    <AddListaForm user = {user} db = {db} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={cancionesSeleccionadas} setCancionesSeleccionadas={setCancionesSeleccionadas} setAbrir={setAbrir} setHacerGrande = {setHacerGrande} setReload = {setReload}></AddListaForm>
+                    : !user ?
+                    <div id = "seleccionaCancionDiv"><p>Inicia sesión para crear listas</p></div>
+                    :
+                    <div id = "seleccionaCancionDiv">
                         <p>Selecciona canciones para añadirlas a la lista</p>
                     </div>
                     }
