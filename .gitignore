@@ -30,3 +30,5 @@ storage.rules
 .pytest_cache
 
 /videos_descargados
+
+**/venv
