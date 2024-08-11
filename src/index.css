@@ -839,8 +839,18 @@ input {
 .changeImageSize{
   position: absolute;
   top: 5%;
-  right: 5%;
+  right: 2%;
   cursor: pointer;
-  transform: translate(-50%, -50%);
+  transform: translate(0, -50%);
   color:rgba(255, 255, 255, 0.7);
+  display:flex;
+  justify-content: space-evenly;
+  width: 5em;
+}
+
+@media only screen and (max-width: 600px) {
+  .changeImageSize {
+    width: 5em;
+    right: 2%;
+  }
 }

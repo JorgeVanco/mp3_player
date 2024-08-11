@@ -31,6 +31,7 @@ import { FiUpload } from "react-icons/fi";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { IoMdExpand, IoMdContract } from "react-icons/io";
 import { doc, updateDoc } from 'firebase/firestore';
+import { PiPushPin, PiPushPinSlash } from "react-icons/pi";
 
 const changeExpanded = (newValue, idx, images) => {
   const imagesRef = doc(db, 'images', 'autorizados');
@@ -48,6 +49,16 @@ const handleImageChange = (newIdx, oldIdx, setImageIdx, images, expanded, setBac
   if (expanded !== null && expanded != images[oldIdx].expanded){
     changeExpanded(expanded, oldIdx, images)
   }
+}
+
+const handleFreezeImages = (setAutoChange, imageTimer) => {
+  setAutoChange(false)
+  imageTimer.clear()
+}
+
+const handleUnfreezeImages = (setAutoChange, imageTimer, imageIdx, expanded, imageIdxLength, backgroundImages) => {
+  setAutoChange(true)
+  imageTimer.setup(imageIdx, expanded, imageIdxLength, backgroundImages)
 }
 
 function App() {
@@ -73,6 +84,7 @@ function App() {
   const [backgroundImages, setBackgroundImages] = useState([])
   const [expanded, setExpanded] = useState(false)
   const [isAuthorized, setIsAuthorized] = useState(false)
+  const [autoChange, setAutoChange] = useState(true)
 
   const handlers = useSwipeable({
     onSwipedRight: () => handleImageChange(((imageIdx - 1) % imageIdxLength + imageIdxLength) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
@@ -80,6 +92,21 @@ function App() {
   })
 
   const timeImages = 15;
+  const [imageTimer, setImageTimer] = useState({
+    timeoutID: null,
+    setup: (oldImageIdx, newExpanded, imageIdxLength, backgroundImages) => {
+      if (typeof imageTimer.timeoutID === 'number') {
+        imageTimer.clear();
+      }
+      imageTimer.timeoutID = setTimeout(() => {
+        handleImageChange((oldImageIdx + 1) % imageIdxLength, oldImageIdx, setImageIdx, backgroundImages, newExpanded, setBackgroundImages)
+      }, timeImages * 1000)
+    },
+
+    clear : () => {
+      clearTimeout(imageTimer.timeoutID)
+    }
+  })
 
   useEffect(()=>{
     getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
@@ -114,19 +141,19 @@ function App() {
   }, [user])
 
   useEffect(() => {
+
     let newExpanded = null;
     if (backgroundImages.length !== 0){
       setBackground(backgroundImages[imageIdx].url)
       newExpanded = backgroundImages[imageIdx].expanded
       setExpanded(newExpanded)
+      if (autoChange){
+        imageTimer.setup(imageIdx, newExpanded, imageIdxLength, backgroundImages)
+        return () => imageTimer.clear()
+      }
     }
 
-    let timer = setTimeout(() => {
-      handleImageChange((imageIdx + 1) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, newExpanded, setBackgroundImages)
-      
-    }, timeImages * 1000)
-    return () => clearTimeout(timer)
-  }, [imageIdx])
+  }, [imageIdx, backgroundImages])
 
   useEffect(() => {
     if (!currentSong){
@@ -144,9 +171,16 @@ function App() {
   let page;
   if (tab === 0){
     page = <div className = {expanded ? "background cover" : "background contain"} style={{backgroundImage:"url(" + background + ")"}} {...handlers}>
-            {expanded ? 
-            <IoMdContract size={24} className={background ? "changeImageSize": "hidden"} onClick={() => {setExpanded(false)}}></IoMdContract>
-            : <IoMdExpand size={24} className={background ? "changeImageSize": "hidden"} onClick={() => {setExpanded(true)}}></IoMdExpand>}
+            <div className={background ? "changeImageSize": "hidden"}>
+              {
+                autoChange ? <PiPushPin size={24} className={background ? "": "hidden"} onClick={() => handleFreezeImages(setAutoChange, imageTimer)}></PiPushPin>:
+                <PiPushPinSlash size={24} className={background ? "": "hidden"} onClick={() => handleUnfreezeImages(setAutoChange, imageTimer, imageIdx, backgroundImages[imageIdx].expanded,  imageIdxLength, backgroundImages)}></PiPushPinSlash>
+              }
+              {expanded ? 
+              <IoMdContract size={24} className={background ? "": "hidden"} onClick={() => {setExpanded(false)}}></IoMdContract>
+              : <IoMdExpand size={24} className={background ? "": "hidden"} onClick={() => {setExpanded(true)}}></IoMdExpand>}
+
+            </div>
             {listaActual ? <div id = "listaActualDiv"><p>Lista Actual: {listaActual ? listaActual : "Ninguna"}</p></div>: null}
           </div>
   }else if(tab === 1){
