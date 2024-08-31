@@ -6,7 +6,8 @@ import getListas from "../functions/getListas";
 const anadirCancionLista = async(user, db, songsToAdd, nodeConverter, listaElegida) => {
     const listasRef = doc(db, user.email, "listas")
     const listasSnap = await getDoc(listasRef);
-    let lista = listasSnap.data()[listaElegida] || {}
+
+    let lista = listaElegida in listasSnap.data() ? listasSnap.data()[listaElegida] : {};
 
     songsToAdd.forEach((song) => {
         let [name, value] = getSongFormat(song)
@@ -20,25 +21,6 @@ const anadirCancionLista = async(user, db, songsToAdd, nodeConverter, listaElegi
         await updateDoc(listasRef, newDoc)
     }else{
         await setDoc(listasRef, newDoc)
-    }
-}
-
-const addListToListsDoc = async(listas, setListas, db, listaElegida) => {
-    // Añade la lista a la lista de todas las listas si no existía previamente
-    let isInListas = false
-    let i = 0
-    while (i < listas.length && !isInListas){
-        if (listas[i] === listaElegida){
-            isInListas = true
-        }
-        i++;
-    }
-
-    if (!isInListas){
-        let nuevas_listas = [...listas, listaElegida]
-        setListas(nuevas_listas)
-        const rastreadorRef = doc(db, 'rastreador_listas_de_musica_314', 'okh8JpYIdDRRUmxRhrPO');
-        await setDoc(rastreadorRef, {"listas":nuevas_listas});
     }
 }
 
