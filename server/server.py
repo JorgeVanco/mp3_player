@@ -25,19 +25,16 @@ class Song(BaseModel):
     author: str
 
 
-def start_scheduler():
+@asynccontextmanager
+async def start_scheduler(app: FastAPI):
     scheduler = BackgroundScheduler()
     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
     scheduler.add_job(update_reproduction_score, "cron", hour=6, minute=00)
     scheduler.start()
+    yield
 
 
-@asynccontextmanager
-def startup_event():
-    start_scheduler()
-
-
-app = FastAPI(lifespan=startup_event)
+app = FastAPI(lifespan=start_scheduler)
 try:
     myclient = pymongo.MongoClient(
         f"mongodb+srv://{os.getenv('MONGODB_ATLAS_USERNAME')}:{os.getenv('MONGODB_ATLAS_PASSWORD')}@mondongo.edq7zvv.mongodb.net/?retryWrites=true&w=majority&appName=Mondongo"
