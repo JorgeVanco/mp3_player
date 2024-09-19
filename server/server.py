@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from contextlib import asynccontextmanager
 
 origins = [
     "http://localhost",
@@ -24,7 +25,19 @@ class Song(BaseModel):
     author: str
 
 
-app = FastAPI()
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
+    scheduler.add_job(update_reproduction_score, "cron", hour=6, minute=00)
+    scheduler.start()
+
+
+@asynccontextmanager
+def startup_event():
+    start_scheduler()
+
+
+app = FastAPI(lifespan=startup_event)
 
 
 myclient = pymongo.MongoClient(
@@ -51,20 +64,13 @@ def update_reproduction_score() -> None:
     )
 
 
-def start_scheduler():
-    scheduler = BackgroundScheduler()
-    # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-    scheduler.add_job(update_reproduction_score, "cron", hour=6, minute=00)
-    scheduler.start()
-
-
-@app.on_event("startup")
-def startup_event():
-    start_scheduler()
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
 
 @app.get("/songs")
-async def root():
+async def songs():
     result = song_order_collection.find({}, {"_id": 0}).sort("reproductions", -1)
     return {r["song_name"] + "_" + r["author"]: r["reproduction_score"] for r in result}
 
