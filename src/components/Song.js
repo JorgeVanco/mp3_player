@@ -10,31 +10,33 @@ import { FaPlay, FaPause, FaPlayCircle, FaPauseCircle } from "react-icons/fa";
 import { TbRewindForward10, TbRewindBackward10 } from "react-icons/tb";
 import { MdSkipPrevious, MdSkipNext } from "react-icons/md";
 import { IoShuffle } from "react-icons/io5";
+import axios from "axios"
+import {API_URL} from "../Constants"
 
 const updateEscuchas = async(song_name, song_author) => {
-    const dateObj = new Date()
-    const month   = dateObj.getUTCMonth() + 1; // months from 1-12
-    const day     = dateObj.getUTCDate();
-    const year    = dateObj.getUTCFullYear();
-    const newDate = day + "-" + month + "-" + year;
-    const document_id = song_name + "_" + song_author + "_" + newDate
+    axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author})
+    // const dateObj = new Date()
+    // const month   = dateObj.getUTCMonth() + 1; // months from 1-12
+    // const day     = dateObj.getUTCDate();
+    // const year    = dateObj.getUTCFullYear();
+    // const newDate = day + "-" + month + "-" + year;
 
-    const escuchasRef = doc(collection(db, 'ESCUCHAS'), document_id);
-    const escuchasSnap = await getDoc(escuchasRef);
+    // const escuchasRef = doc(collection(db, 'ESCUCHAS'), document_id);
+    // const escuchasSnap = await getDoc(escuchasRef);
 
 
-    let numberReproductions = 1;
-    if (escuchasSnap.exists()) {
-        let escuchasData = escuchasSnap.data();
-        numberReproductions += escuchasData.reproductions;
-    }
+    // let numberReproductions = 1;
+    // if (escuchasSnap.exists()) {
+    //     let escuchasData = escuchasSnap.data();
+    //     numberReproductions += escuchasData.reproductions;
+    // }
 
-    await setDoc(escuchasRef, {
-        song: song_name,
-        author: song_author,
-        reproductions: numberReproductions,
-        date: new Date(year, month - 1, day)
-    });
+    // await setDoc(escuchasRef, {
+    //     song: song_name,
+    //     author: song_author,
+    //     reproductions: numberReproductions,
+    //     date: new Date(year, month - 1, day)
+    // });
 
 }
 

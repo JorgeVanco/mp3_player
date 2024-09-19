@@ -2,7 +2,8 @@ import { LinkedList, Node } from "../classes/LinkedList";
 import readDb from './readDb';
 import { db } from "../firebase_files/firebase_app";
 import {getFromDict, millisecondsToDays} from "../functions/utils"
-
+import axios from "axios"
+import {API_URL} from "../Constants"
 
 import { doc, getDoc} from "firebase/firestore";
 
@@ -33,7 +34,7 @@ const createSongLinkedList = async (items, scores, storage, setSongList, setCurr
   setTodasLasCanciones(newSongList)
   setSongList(newSongList)
 
-  //   songNodes = sortByRanking(songNodes, scores)
+  songNodes = sortByRanking(songNodes, scores)
 
   songNodes.forEach((node) => {
     newSongList.addNode(node)
@@ -46,7 +47,7 @@ const createSongLinkedList = async (items, scores, storage, setSongList, setCurr
 
 const sortByRanking = (items, rankings) => {
   return items
-  .map((item, index) => [getFromDict(rankings, item.songName, 0), item]) // add the args to sort by
+  .map((item, index) => [getFromDict(rankings, item.songName + "_" + item.author, 0), item]) // add the args to sort by
   .sort(([arg1], [arg2]) => arg2 - arg1) // sort by the args
   .map(([, item]) => item); // extract the sorted items
 }
@@ -59,19 +60,13 @@ const sortByPreferences = async (items, storage, setSongList, setCurrentSong, se
   date.setDate(date.getDate() - 31 * 2)
   
   // let q = query(collection(db, "ESCUCHAS"), where("date", ">=", date));
-
+  let baseURL = API_URL + "/songs"
+  let scores = {};
+  await axios.get(baseURL).then((response) => {
+    scores = response.data;
+    createSongLinkedList(items, scores, storage, setSongList, setCurrentSong, setTodasLasCanciones)
+  });
   // Calculate scores
-  let scores = {}
-  // getDocs(q).then((querySnapshot) => querySnapshot.forEach((doc) => {
-  //   let dateDoc = new Date(doc.data().date.seconds * 1000)
-  //   scores[doc.data().song] = getFromDict(scores, doc.data().song, 0) + gamma ** millisecondsToDays(Math.abs(date.getTime() - dateDoc.getTime())) * doc.data().reproductions
-  // })).then(() => {
-  //   // Create linked list
-  //   console.log("SCORES", scores)
-  //   createSongLinkedList(items, scores, storage, setSongList, setCurrentSong, setTodasLasCanciones)
-  // })
-  createSongLinkedList(items, scores, storage, setSongList, setCurrentSong, setTodasLasCanciones)
-
 }
 
 
@@ -81,17 +76,6 @@ const getAllSongs = async(storage, setSongList, setCurrentSong, setTodasLasCanci
   // Y crear la lista enlazada con todas las canciones
   sortByPreferences(items, storage, setSongList, setCurrentSong, setTodasLasCanciones).then((items) => {
   })
-  
-  // readDb("rastreador_listas_de_musica_314").then((querySnapshot) => {
-  //   querySnapshot.forEach((doc) => {
-
-  //     if (doc.id === "okh8JpYIdDRRUmxRhrPO"){
-  //       setListas(doc.data().listas)
-
-  //     }
-  //   });
-  // })
-
 
 }
 
