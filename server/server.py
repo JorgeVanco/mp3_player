@@ -37,14 +37,19 @@ class Song(BaseModel):
 async def start_scheduler(app: FastAPI):
     scheduler = BackgroundScheduler()
     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-    d = datetime.now()
-    print(f"{d.hour}:{d.minute}")
-    scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=20)
+    d = datetime.datetime.now()
+    print(f"THE CURRENT HOUR IS {d.hour}:{d.minute}")
+    scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=30)
     scheduler.start()
     yield
 
 
 app = FastAPI(lifespan=start_scheduler)
+
+
+# @app.on_event("startup")
+# async def startup_db_client():
+#     print("startup")
 
 
 app.add_middleware(
