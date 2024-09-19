@@ -38,15 +38,18 @@ def startup_event():
 
 
 app = FastAPI(lifespan=startup_event)
-
-print(
-    f"mongodb+srv://{os.getenv('MONGODB_ATLAS_USERNAME')}:{os.getenv('MONGODB_ATLAS_PASSWORD')}@mondongo.edq7zvv.mongodb.net/?retryWrites=true&w=majority&appName=Mondongo"
-)
-myclient = pymongo.MongoClient(
-    f"mongodb+srv://{os.getenv('MONGODB_ATLAS_USERNAME')}:{os.getenv('MONGODB_ATLAS_PASSWORD')}@mondongo.edq7zvv.mongodb.net/?retryWrites=true&w=majority&appName=Mondongo"
-)
-mydb = myclient["mp3_player_db"]
-song_order_collection = mydb["song_order"]
+try:
+    myclient = pymongo.MongoClient(
+        f"mongodb+srv://{os.getenv('MONGODB_ATLAS_USERNAME')}:{os.getenv('MONGODB_ATLAS_PASSWORD')}@mondongo.edq7zvv.mongodb.net/?retryWrites=true&w=majority&appName=Mondongo"
+    )
+    mydb = myclient["mp3_player_db"]
+    song_order_collection = mydb["song_order"]
+    myclient.server_info()  # force connection on a request as the
+    # connect=True parameter of MongoClient seems
+    # to be useless here
+except pymongo.errors.ServerSelectionTimeoutError as err:
+    # do whatever you need
+    print(err)
 
 app.add_middleware(
     CORSMiddleware,
