@@ -1,3 +1,4 @@
+import datetime
 from fastapi import FastAPI
 import pymongo
 import uvicorn
@@ -36,7 +37,9 @@ class Song(BaseModel):
 async def start_scheduler(app: FastAPI):
     scheduler = BackgroundScheduler()
     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-    scheduler.add_job(update_reproduction_score, "cron", hour=12, minute=15)
+    d = datetime.now()
+    print(f"{d.hour}:{d.minute}")
+    scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=20)
     scheduler.start()
     yield
 
@@ -54,6 +57,7 @@ app.add_middleware(
 
 
 def update_reproduction_score() -> None:
+    print("Updating reproduction score")
     song_order_collection.update_many(
         {},  # Empty filter means update all documents
         {
@@ -76,7 +80,6 @@ async def songs():
 @app.post("/reproductions")
 async def add_song_reproduction(song: Song):
     song_name = song.song_name
-    print(song)
 
     song_order_collection.update_one(
         {"song_name": song_name, "author": song.author},
