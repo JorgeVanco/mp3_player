@@ -32,3 +32,5 @@ storage.rules
 /videos_descargados
 
 **/venv
+
+**/__pycache__
