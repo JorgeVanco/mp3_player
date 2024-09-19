@@ -39,16 +39,17 @@ class Song(BaseModel):
     author: str
 
 
-@asynccontextmanager
-async def start_scheduler(app: FastAPI):
-    scheduler = BackgroundScheduler()
-    # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-    scheduler.add_job(update_reproduction_score, "cron", hour=6, minute=00)
-    scheduler.start()
-    yield
+# @asynccontextmanager
+# async def start_scheduler(app: FastAPI):
+#     scheduler = BackgroundScheduler()
+#     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
+#     scheduler.add_job(update_reproduction_score, "cron", hour=6, minute=00)
+#     scheduler.start()
+#     yield
 
 
-app = FastAPI(lifespan=start_scheduler)
+# app = FastAPI(lifespan=start_scheduler)
+app = FastAPI()
 
 
 app.add_middleware(
