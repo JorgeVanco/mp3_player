@@ -80,6 +80,7 @@ def update_reproduction_score() -> None:
 
 @app.get("/")
 async def root():
+    print("Hello World")
     return {"message": "Hello World"}
 
 
