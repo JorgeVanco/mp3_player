@@ -33,30 +33,42 @@ class Song(BaseModel):
     author: str
 
 
+class Hour(BaseModel):
+    hour: int
+    minute: int
+
+
+app = FastAPI()
+
+
 # @asynccontextmanager
-# async def start_scheduler(app: FastAPI):
+# def start_scheduler(app: FastAPI):
+@app.post("/scheduler")
+def start_scheduler(hour: Hour) -> None:
+    scheduler = BackgroundScheduler()
+    # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
+    d = datetime.datetime.now()
+    print(
+        f"THE CURRENT HOUR IS {d.hour}:{d.minute}, THE HOUR TO RUN IS {hour.hour}:{hour.minute}"
+    )
+    scheduler.add_job(
+        update_reproduction_score, "cron", hour=hour.hour, minute=hour.minute
+    )
+    scheduler.start()
+
+
+# app = FastAPI(lifespan=start_scheduler)
+
+
+# @app.on_event("startup")
+# async def startup_db_client():
+#     print("startup")
 #     scheduler = BackgroundScheduler()
 #     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
 #     d = datetime.datetime.now()
 #     print(f"THE CURRENT HOUR IS {d.hour}:{d.minute}")
-#     scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=30)
+#     scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=34)
 #     scheduler.start()
-#     yield
-
-
-app = FastAPI()
-# app = FastAPI(lifespan=start_scheduler)
-
-
-@app.on_event("startup")
-async def startup_db_client():
-    print("startup")
-    scheduler = BackgroundScheduler()
-    # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-    d = datetime.datetime.now()
-    print(f"THE CURRENT HOUR IS {d.hour}:{d.minute}")
-    scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=34)
-    scheduler.start()
 
 
 app.add_middleware(
