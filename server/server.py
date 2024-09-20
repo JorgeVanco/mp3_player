@@ -82,7 +82,7 @@ app.add_middleware(
 
 
 @app.get("/update_scores")
-def update_reproduction_score() -> None:
+async def update_reproduction_score() -> None:
     print("Updating reproduction score")
     song_order_collection.update_many(
         {},  # Empty filter means update all documents
@@ -90,6 +90,7 @@ def update_reproduction_score() -> None:
             "$mul": {"reproduction_score": 0.7}
         },  # Multiply the `reproductions` field by 0.7
     )
+    return {"message": "Reproduction scores updated successfully"}
 
 
 @app.get("/")
