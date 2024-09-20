@@ -8,5 +8,11 @@
     ],
     "env": {
       "APP_MODULE": "server:app"
+    },
+    "crons": [
+    {
+      "path": "/update_scores",
+      "schedule": "27 4 * * *"
     }
-  }
+  ]
+}
