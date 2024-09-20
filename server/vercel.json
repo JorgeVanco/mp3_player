@@ -12,7 +12,7 @@
     "crons": [
     {
       "path": "/update_scores",
-      "schedule": "* * * * *"
+      "schedule": "15 15 * *"
     }
   ]
 }
