@@ -55,6 +55,7 @@ def start_scheduler(hour: Hour) -> None:
         update_reproduction_score, "cron", hour=hour.hour, minute=hour.minute
     )
     scheduler.start()
+    return {"message": "Scheduler started successfully"}
 
 
 # app = FastAPI(lifespan=start_scheduler)
