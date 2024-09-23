@@ -239,6 +239,10 @@ button{
   color: rgb(223, 223, 223);
   font-weight: bold;
   background-color: #285467;
+  
+}
+
+.center{
   position: absolute;
   top:50%;
   left:50%;

@@ -12,6 +12,7 @@ import { MdSkipPrevious, MdSkipNext } from "react-icons/md";
 import { IoShuffle } from "react-icons/io5";
 import axios from "axios"
 import {API_URL} from "../Constants"
+import LogInButton from "./LogInButton";
 
 const updateEscuchas = async(song_name, song_author) => {
     axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author})
@@ -111,7 +112,7 @@ const shuffle = (e, songList, setCurrentSong) => {
     setCurrentSong(songList.head)
 }
 
-const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList, setSongList, setTodasLasCanciones, audioRef, setAudioRef, isPaused, setIsPaused, user}) => {
+const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList, setSongList, setTodasLasCanciones, audioRef, setAudioRef, isPaused, setIsPaused, user, setUser}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
     const [repeat, setRepeat] = useState(false)
     const [repeatState, setRepeatState] = useState(0)
@@ -201,7 +202,11 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
             {!smallCard ? 
                 <>
                     <IoShuffle size={30} className="shuffleIcon" onClick={(e) => shuffle(e, songList, setCurrentSong)}></IoShuffle>
-                    <AddListaForm db = {db} user = {user} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm>
+                    {
+                        user ? <AddListaForm db = {db} user = {user} listas = {listas} setListas={setListas} nodeConverter={nodeConverter} songsToAdd={[currentSong]} setCancionesSeleccionadas={null} setHacerGrande={setHacerGrande} setReload={setReload}></AddListaForm> : 
+                        <LogInButton setUser = {setUser}></LogInButton>
+                    }
+                    
                     {
                         repeatState === 2 ? <RiRepeatOneLine size={28} className={!smallCard ? "repeatIcon": "repeatIcon repeatIconSmall"} onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={{color:"green"}}></RiRepeatOneLine>:
                         <RiRepeat2Line size={28} className={!smallCard ? "repeatIcon": "repeatIcon repeatIconSmall"} onClick={(e) => changeRepeatState(e, setRepeatState, repeatState)} style={repeatState ? {color:"green"} : null}></RiRepeat2Line>

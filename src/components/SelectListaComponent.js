@@ -67,9 +67,9 @@ const SelectListaComponent = ({user, setUser, listas, songList, setSongList, lis
     if (!user){
         return (<>
                 <div id = "selectListaComponent" className="selectListaComponent">
-                <h3>Tus listas</h3>
-                <p>Inicia sesión para ver tus listas</p>
-                <UserPage user={user} setUser={setUser}></UserPage>
+                    <h3>Tus listas</h3>
+                    <p>Inicia sesión para ver tus listas</p>
+                    <UserPage user={user} setUser={setUser}></UserPage>
                 </div>
             </>)
     }
