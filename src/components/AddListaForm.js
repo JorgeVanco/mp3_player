@@ -5,9 +5,14 @@ import getListas from "../functions/getListas";
 
 const anadirCancionLista = async(user, db, songsToAdd, nodeConverter, listaElegida) => {
     const listasRef = doc(db, user.email, "listas")
+    console.log(listasRef)
     const listasSnap = await getDoc(listasRef);
+    console.log(listasSnap.exists())
+    let lista={};
+    if (listasSnap.exists()){
+        lista = listaElegida in listasSnap.data() ? listasSnap.data()[listaElegida] : {};
+    }
 
-    let lista = listaElegida in listasSnap.data() ? listasSnap.data()[listaElegida] : {};
 
     songsToAdd.forEach((song) => {
         let [name, value] = getSongFormat(song)

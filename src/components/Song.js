@@ -15,28 +15,6 @@ import {API_URL} from "../Constants"
 
 const updateEscuchas = async(song_name, song_author) => {
     axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author})
-    // const dateObj = new Date()
-    // const month   = dateObj.getUTCMonth() + 1; // months from 1-12
-    // const day     = dateObj.getUTCDate();
-    // const year    = dateObj.getUTCFullYear();
-    // const newDate = day + "-" + month + "-" + year;
-
-    // const escuchasRef = doc(collection(db, 'ESCUCHAS'), document_id);
-    // const escuchasSnap = await getDoc(escuchasRef);
-
-
-    // let numberReproductions = 1;
-    // if (escuchasSnap.exists()) {
-    //     let escuchasData = escuchasSnap.data();
-    //     numberReproductions += escuchasData.reproductions;
-    // }
-
-    // await setDoc(escuchasRef, {
-    //     song: song_name,
-    //     author: song_author,
-    //     reproductions: numberReproductions,
-    //     date: new Date(year, month - 1, day)
-    // });
 
 }
 
