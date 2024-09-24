@@ -1,12 +1,9 @@
-import getAllSongs from "../functions/getAllSongs";
 import { getSongFormat } from "../functions/utils";
 import {ref, uploadBytes} from "firebase/storage";
 import { useState } from "react";
-
 import { db } from "../firebase_files/firebase_app";
 import {getDownloadURL} from "firebase/storage";
 import { doc, setDoc, updateDoc, arrayUnion} from "firebase/firestore"; 
-
 import { Node } from "../classes/LinkedList";
 
 const handleSubir = async (storage, setSubirMusica) => {
@@ -18,7 +15,6 @@ const handleSubir = async (storage, setSubirMusica) => {
     files.forEach(async (file) => {
         const storageRef = ref(storage, file.name);
         uploadBytes(storageRef, file).then(async (snapshot) => {
-            // getAllSongs(storage, setSongList, setCurrentSong, setTodasLasCanciones, setListas)
         
             // Upload completed successfully, now we can get the download URL
             getDownloadURL(snapshot.ref).then((downloadURL) => {
