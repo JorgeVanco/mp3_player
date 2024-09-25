@@ -1,12 +1,10 @@
-import datetime
 from fastapi import FastAPI
 import pymongo
 import uvicorn
 from pydantic import BaseModel
-from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from contextlib import asynccontextmanager
+from download_song import download_song, upload_file_to_firebase
 
 origins = [
     "http://localhost",
@@ -36,6 +34,10 @@ class Song(BaseModel):
 class Hour(BaseModel):
     hour: int
     minute: int
+
+
+class SongUrl(BaseModel):
+    song_url: str
 
 
 app = FastAPI()
@@ -115,6 +117,20 @@ async def add_song_reproduction(song: Song):
         upsert=True,
     )
     return {"message": "Reproductions added successfully"}
+
+
+@app.post("/upload_music")
+async def upload_music(songUrl: SongUrl):
+    dir = "downloaded_songs/"
+    os.makedirs(dir, exist_ok=True)
+
+    download_song(songUrl.song_url, dir)
+
+    print(os.listdir(dir))
+    for file in os.listdir(dir):
+        path = os.path.join(dir, file)
+        upload_file_to_firebase(path, "", file)
+        os.remove(path)
 
 
 if __name__ == "__main__":

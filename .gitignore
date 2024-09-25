@@ -34,3 +34,8 @@ storage.rules
 **/venv
 
 **/__pycache__
+
+/server/prueba-audio-494e7-firebase-adminsdk-f7kn4-d3d2cbdd53.json
+**/.env
+
+downloaded_songs/
