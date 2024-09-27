@@ -76,10 +76,10 @@ const SubirMusicComponent = ({storage, isAuthorized}) =>  {
     const [subirImagenes, setSubirImagenes] = useState(false)
     return <>
         
-        <button id = "subirMusicToggleButton" className="blue-btn" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button>
+        <button id = "subirMusicToggleButton" className="blue-btn center" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button>
         {
             isAuthorized ?
-            <button id = "subirImageToggleButton" className="blue-btn" onClick={() => setSubirImagenes(!subirImagenes)}>Subir imagenes</button>
+            <button id = "subirImageToggleButton" className="blue-btn center" onClick={() => setSubirImagenes(!subirImagenes)}>Subir imagenes</button>
             : null
         }
         
