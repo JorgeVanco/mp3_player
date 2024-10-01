@@ -84,95 +84,99 @@ def stream_song_to_firebase(
 
     try:
         with tempfile.TemporaryDirectory() as tempdir:
-            # Run the spotdl command as a subprocess
-            print("Downloading song")
-            try:
-                process = subprocess.Popen(
-                    [
-                        "python",
-                        "-m",
-                        "spotdl",
-                        spotify_url,
-                        "--output",
-                        tempdir,
-                        "--no-cache",
-                    ],
-                )
-            except Exception as e:
-                print(e)
+            with tempfile.TemporaryDirectory() as temp_cache:
+                # Run the spotdl command as a subprocess
+                print("Downloading song")
+                try:
+                    process = subprocess.Popen(
+                        [
+                            "python",
+                            "-m",
+                            "spotdl",
+                            spotify_url,
+                            "--output",
+                            tempdir,
+                            "--cache-path",
+                            temp_cache,
+                        ],
+                    )
+                except Exception as e:
+                    print(e)
 
-            process.wait()
-            print(process.returncode)
-            print(process.stderr)
-            print(process.stdout)
-            print("Process finished")
-            if process.returncode == 0:
-                print("Song downloaded successfully.")
-                print("os.listdir(tempdir)", os.listdir(tempdir))
-                for file_name in os.listdir(tempdir):
-                    if file_name.endswith(".mp3"):
-                        print(file_name, "found")
-                        mp3_path = os.path.join(tempdir, file_name)
+                process.wait()
+                print(process.returncode)
+                print(process.stderr)
+                print(process.stdout)
+                print("Process finished")
+                if process.returncode == 0:
+                    print("Song downloaded successfully.")
+                    print("os.listdir(tempdir)", os.listdir(tempdir))
+                    for file_name in os.listdir(tempdir):
+                        if file_name.endswith(".mp3"):
+                            print(file_name, "found")
+                            mp3_path = os.path.join(tempdir, file_name)
 
-                        print("FInnished playing")
-                        blob.upload_from_filename(mp3_path, content_type="audio/mpeg")
-                        # with open(mp3_path, "rb") as f:
-                        #     # buffer = io.BytesIO(f.read())
-                        #     blob.upload_from_file(f, content_type="audio/mpeg")
-                # buffer = io.BytesIO()
-                # for chunk in iter(lambda: process.stdout.read(4096), b""):
-                #     buffer.write(chunk)
-                # total_bytes = 0
-                # while True:
-                #     print("ok")
-                #     chunk = process.stdout.read(4096)  # Read 4096-byte chunks
-                #     if not chunk:  # If chunk is empty, we are at the end of the stream
-                #         break
-                #     buffer.write(chunk)
-                #     total_bytes += len(chunk)
+                            print("FInnished playing")
+                            blob.upload_from_filename(
+                                mp3_path, content_type="audio/mpeg"
+                            )
+                            # with open(mp3_path, "rb") as f:
+                            #     # buffer = io.BytesIO(f.read())
+                            #     blob.upload_from_file(f, content_type="audio/mpeg")
+                    # buffer = io.BytesIO()
+                    # for chunk in iter(lambda: process.stdout.read(4096), b""):
+                    #     buffer.write(chunk)
+                    # total_bytes = 0
+                    # while True:
+                    #     print("ok")
+                    #     chunk = process.stdout.read(4096)  # Read 4096-byte chunks
+                    #     if not chunk:  # If chunk is empty, we are at the end of the stream
+                    #         break
+                    #     buffer.write(chunk)
+                    #     total_bytes += len(chunk)
 
-                # print(f"Total bytes written to buffer: {total_bytes}")
-                print("FInnished")
-                # while True:
-                #     chunk = process.stdout  # .read(4096)  # Read 4096-byte chunks
-                #     if not chunk:  # If chunk is empty, we are at the end of the stream
-                #         break
-                #     buffer.write(chunk)
+                    # print(f"Total bytes written to buffer: {total_bytes}")
+                    print("FInnished")
+                    # while True:
+                    #     chunk = process.stdout  # .read(4096)  # Read 4096-byte chunks
+                    #     if not chunk:  # If chunk is empty, we are at the end of the stream
+                    #         break
+                    #     buffer.write(chunk)
 
-                # Once the download is finished, upload the entire buffer to Firebase
-                # buffer.seek(0)  # Reset buffer pointer to the beginning
-                # blob.upload_from_file(buffer, content_type="audio/mpeg")
-                # Make the file public (optional)
-                blob.make_public()
-                print(
-                    f"File streamed and uploaded successfully to Firebase Storage at {blob.public_url}"
-                )
+                    # Once the download is finished, upload the entire buffer to Firebase
+                    # buffer.seek(0)  # Reset buffer pointer to the beginning
+                    # blob.upload_from_file(buffer, content_type="audio/mpeg")
+                    # Make the file public (optional)
+                    blob.make_public()
+                    print(
+                        f"File streamed and uploaded successfully to Firebase Storage at {blob.public_url}"
+                    )
 
-                # Close the buffer
-                # buffer.close()
+                    # Close the buffer
+                    # buffer.close()
 
-                # Wait for the process to finish
+                    # Wait for the process to finish
 
-                name = blob.name[:-4].replace("_", " ")
-                regex = re.compile(r"\((.*?)\)|\[(.*?)\]")
-                clean = re.sub(regex, "", name)
-                clean = clean.strip()
-                author, song_name = clean.split(" - ")
-                data = {
-                    "bucket": BUCKET,
-                    "path": blob.name,
-                    "url": blob.public_url,
-                    "author": author,
-                    "songName": song_name,
-                }
-                name = song_name + " - " + author
+                    name = blob.name[:-4].replace("_", " ")
+                    regex = re.compile(r"\((.*?)\)|\[(.*?)\]")
+                    clean = re.sub(regex, "", name)
+                    clean = clean.strip()
+                    author, song_name = clean.split(" - ")
+                    data = {
+                        "bucket": BUCKET,
+                        "path": blob.name,
+                        "url": blob.public_url,
+                        "author": author,
+                        "songName": song_name,
+                    }
+                    name = song_name + " - " + author
 
-                songs_ref = db.collection("songs").document("songs")
-                print({db.field_path(name): data})
-                songs_ref.update({db.field_path(name): data})
-                print("Song is now live")
-            else:
-                print(f"Error downloading song: {process.stderr}")
+                    songs_ref = db.collection("songs").document("songs")
+                    print({db.field_path(name): data})
+                    songs_ref.update({db.field_path(name): data})
+                    print("Song is now live")
+                else:
+                    print(f"Error downloading song: {process.stderr}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
