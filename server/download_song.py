@@ -7,6 +7,7 @@ import re
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import tempfile
+from spotdl import Spotdl
 
 # Load environment variables from .env file
 load_dotenv()
@@ -86,22 +87,27 @@ def stream_song_to_firebase(
         with tempfile.TemporaryDirectory() as tempdir:
             with tempfile.TemporaryDirectory() as temp_cache:
                 # Run the spotdl command as a subprocess
+                spotdl_instance = Spotdl(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET)
+                song = spotdl_instance.search([spotify_url])
+                print(len(song))
+                print(song)
+
                 print("Downloading song")
-                try:
-                    process = subprocess.Popen(
-                        [
-                            "python",
-                            "-m",
-                            "spotdl",
-                            spotify_url,
-                            "--output",
-                            tempdir,
-                            "--cache-path",
-                            temp_cache,
-                        ],
-                    )
-                except Exception as e:
-                    print(e)
+                # try:
+                #     process = subprocess.Popen(
+                #         [
+                #             "python",
+                #             "-m",
+                #             "spotdl",
+                #             spotify_url,
+                #             "--output",
+                #             tempdir,
+                #             "--cache-path",
+                #             temp_cache,
+                #         ],
+                #     )
+                # except Exception as e:
+                #     print(e)
 
                 process.wait()
                 print(process.returncode)
