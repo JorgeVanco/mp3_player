@@ -88,7 +88,15 @@ def stream_song_to_firebase(
             print("Downloading song")
             try:
                 process = subprocess.Popen(
-                    ["python", "-m", "spotdl", spotify_url, "--output", tempdir],
+                    [
+                        "python",
+                        "-m",
+                        "spotdl",
+                        spotify_url,
+                        "--output",
+                        tempdir,
+                        "--no-cache",
+                    ],
                 )
             except Exception as e:
                 print(e)
