@@ -7,6 +7,11 @@ import re
 import io
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import tempfile
+
+# import vlc
+import time
+from pygame import mixer
 
 # Load environment variables from .env file
 load_dotenv()
@@ -83,75 +88,98 @@ def stream_song_to_firebase(
     # Step 3: Create a named pipe (FIFO)
 
     try:
-        # Run the spotdl command as a subprocess
-        print("Downloading song")
-        process = subprocess.Popen(
-            ["spotdl", spotify_url],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            bufsize=4096,
-        )
-        print(process.returncode)
-        print(process.stderr)
-        print(process.stdout)
-        if True or process.returncode == 0:
-            print("Song downloaded successfully.")
-
-            buffer = io.BytesIO()
-            # for chunk in iter(lambda: process.stdout.read(4096), b""):
-            #     buffer.write(chunk)
-            total_bytes = 0
-            while True:
-                print("ok")
-                chunk = process.stdout.read(4096)  # Read 4096-byte chunks
-                if not chunk:  # If chunk is empty, we are at the end of the stream
-                    break
-                buffer.write(chunk)
-                total_bytes += len(chunk)
-
-            print(f"Total bytes written to buffer: {total_bytes}")
-            print("FInnished")
-            # while True:
-            #     chunk = process.stdout  # .read(4096)  # Read 4096-byte chunks
-            #     if not chunk:  # If chunk is empty, we are at the end of the stream
-            #         break
-            #     buffer.write(chunk)
-
-            # Once the download is finished, upload the entire buffer to Firebase
-            buffer.seek(0)  # Reset buffer pointer to the beginning
-            blob.upload_from_file(buffer, content_type="audio/mpeg")
-            # Make the file public (optional)
-            blob.make_public()
-            print(
-                f"File streamed and uploaded successfully to Firebase Storage at {blob.public_url}"
+        with tempfile.TemporaryDirectory() as tempdir:
+            # Run the spotdl command as a subprocess
+            print("Downloading song")
+            process = subprocess.Popen(
+                ["spotdl", spotify_url, "--output", tempdir],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                bufsize=4096,
             )
-
-            # Close the buffer
-            buffer.close()
-
-            # Wait for the process to finish
+            print(process.returncode)
+            print(process.stderr)
+            print(process.stdout)
             process.wait()
+            print("Process finished")
+            if process.returncode == 0:
+                print("Song downloaded successfully.")
+                print("os.listdir(tempdir)", os.listdir(tempdir))
+                for file_name in os.listdir(tempdir):
+                    if file_name.endswith(".mp3"):
+                        print(file_name, "found")
+                        mp3_path = os.path.join(tempdir, file_name)
 
-            name = blob.name[:-4].replace("_", " ")
-            regex = re.compile(r"\((.*?)\)|\[(.*?)\]")
-            clean = re.sub(regex, "", name)
-            clean = clean.strip()
-            author, song_name = clean.split(" - ")
-            data = {
-                "bucket": BUCKET,
-                "path": blob.name,
-                "url": blob.public_url,
-                "author": author,
-                "songName": song_name,
-            }
-            name = song_name + " - " + author
+                        # Read the MP3 file into a buffer
+                        # p = vlc.MediaPlayer(mp3_path)
+                        # mixer.init()
+                        # mixer.music.load(mp3_path)
+                        # mixer.music.play()
+                        # print("Started playing song")
+                        # while (
+                        #     mixer.music.get_busy()
+                        # ):  # wait for music to finish playing
+                        #     time.sleep(1)
+                        # p.play()
+                        print("FInnished playing")
+                        blob.upload_from_filename(mp3_path, content_type="audio/mpeg")
+                        # with open(mp3_path, "rb") as f:
+                        #     # buffer = io.BytesIO(f.read())
+                        #     blob.upload_from_file(f, content_type="audio/mpeg")
+                # buffer = io.BytesIO()
+                # for chunk in iter(lambda: process.stdout.read(4096), b""):
+                #     buffer.write(chunk)
+                # total_bytes = 0
+                # while True:
+                #     print("ok")
+                #     chunk = process.stdout.read(4096)  # Read 4096-byte chunks
+                #     if not chunk:  # If chunk is empty, we are at the end of the stream
+                #         break
+                #     buffer.write(chunk)
+                #     total_bytes += len(chunk)
 
-            songs_ref = db.collection("songs").document("songs")
-            print({db.field_path(name): data})
-            songs_ref.update({db.field_path(name): data})
-            print("Song is now live")
-        else:
-            print(f"Error downloading song: {process.stderr}")
+                # print(f"Total bytes written to buffer: {total_bytes}")
+                print("FInnished")
+                # while True:
+                #     chunk = process.stdout  # .read(4096)  # Read 4096-byte chunks
+                #     if not chunk:  # If chunk is empty, we are at the end of the stream
+                #         break
+                #     buffer.write(chunk)
+
+                # Once the download is finished, upload the entire buffer to Firebase
+                # buffer.seek(0)  # Reset buffer pointer to the beginning
+                # blob.upload_from_file(buffer, content_type="audio/mpeg")
+                # Make the file public (optional)
+                blob.make_public()
+                print(
+                    f"File streamed and uploaded successfully to Firebase Storage at {blob.public_url}"
+                )
+
+                # Close the buffer
+                # buffer.close()
+
+                # Wait for the process to finish
+
+                name = blob.name[:-4].replace("_", " ")
+                regex = re.compile(r"\((.*?)\)|\[(.*?)\]")
+                clean = re.sub(regex, "", name)
+                clean = clean.strip()
+                author, song_name = clean.split(" - ")
+                data = {
+                    "bucket": BUCKET,
+                    "path": blob.name,
+                    "url": blob.public_url,
+                    "author": author,
+                    "songName": song_name,
+                }
+                name = song_name + " - " + author
+
+                songs_ref = db.collection("songs").document("songs")
+                print({db.field_path(name): data})
+                songs_ref.update({db.field_path(name): data})
+                print("Song is now live")
+            else:
+                print(f"Error downloading song: {process.stderr}")
 
     except Exception as e:
         print(f"An error occurred: {e}")

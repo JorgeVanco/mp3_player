@@ -39,3 +39,5 @@ storage.rules
 **/.env
 
 downloaded_songs/
+
+.cache
