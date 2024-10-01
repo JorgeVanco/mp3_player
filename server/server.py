@@ -122,15 +122,8 @@ async def add_song_reproduction(song: Song):
 @app.post("/upload_music")
 async def upload_music(songUrl: SongUrl):
     dir = "downloaded_songs/"
-    os.makedirs(dir, exist_ok=True)
 
     stream_song_to_firebase(songUrl.song_url, dir, "path", "", "file")
-
-    # print(os.listdir(dir))
-    # for file in os.listdir(dir):
-    #     path = os.path.join(dir, file)
-    #     upload_file_to_firebase(path, "", file)
-    #     os.remove(path)
 
 
 if __name__ == "__main__":
