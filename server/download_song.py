@@ -86,16 +86,17 @@ def stream_song_to_firebase(
         with tempfile.TemporaryDirectory() as tempdir:
             # Run the spotdl command as a subprocess
             print("Downloading song")
-            process = subprocess.Popen(
-                ["python3", "-m", "spotdl", spotify_url, "--output", tempdir],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                bufsize=4096,
-            )
+            try:
+                process = subprocess.Popen(
+                    ["python", "-m", "spotdl", spotify_url, "--output", tempdir],
+                )
+            except Exception as e:
+                print(e)
+
+            process.wait()
             print(process.returncode)
             print(process.stderr)
             print(process.stdout)
-            process.wait()
             print("Process finished")
             if process.returncode == 0:
                 print("Song downloaded successfully.")
@@ -105,17 +106,6 @@ def stream_song_to_firebase(
                         print(file_name, "found")
                         mp3_path = os.path.join(tempdir, file_name)
 
-                        # Read the MP3 file into a buffer
-                        # p = vlc.MediaPlayer(mp3_path)
-                        # mixer.init()
-                        # mixer.music.load(mp3_path)
-                        # mixer.music.play()
-                        # print("Started playing song")
-                        # while (
-                        #     mixer.music.get_busy()
-                        # ):  # wait for music to finish playing
-                        #     time.sleep(1)
-                        # p.play()
                         print("FInnished playing")
                         blob.upload_from_filename(mp3_path, content_type="audio/mpeg")
                         # with open(mp3_path, "rb") as f:
