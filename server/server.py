@@ -4,7 +4,7 @@ import uvicorn
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from download_song import download_song, upload_file_to_firebase
+from download_song import stream_song_to_firebase, upload_file_to_firebase
 
 origins = [
     "http://localhost",
@@ -124,13 +124,13 @@ async def upload_music(songUrl: SongUrl):
     dir = "downloaded_songs/"
     os.makedirs(dir, exist_ok=True)
 
-    download_song(songUrl.song_url, dir)
+    stream_song_to_firebase(songUrl.song_url, dir, "path", "", "file")
 
-    print(os.listdir(dir))
-    for file in os.listdir(dir):
-        path = os.path.join(dir, file)
-        upload_file_to_firebase(path, "", file)
-        os.remove(path)
+    # print(os.listdir(dir))
+    # for file in os.listdir(dir):
+    #     path = os.path.join(dir, file)
+    #     upload_file_to_firebase(path, "", file)
+    #     os.remove(path)
 
 
 if __name__ == "__main__":
