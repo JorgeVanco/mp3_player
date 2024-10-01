@@ -87,7 +87,7 @@ def stream_song_to_firebase(
             # Run the spotdl command as a subprocess
             print("Downloading song")
             process = subprocess.Popen(
-                ["spotdl", spotify_url, "--output", tempdir],
+                ["python3 -m spotdl", spotify_url, "--output", tempdir],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 bufsize=4096,
