@@ -4,14 +4,9 @@ from firebase_admin import credentials, storage, firestore
 import os
 from dotenv import load_dotenv
 import re
-import io
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import tempfile
-
-# import vlc
-import time
-from pygame import mixer
 
 # Load environment variables from .env file
 load_dotenv()
