@@ -7,7 +7,8 @@ import re
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import tempfile
-from spotdl import Spotdl
+
+# from spotdl import Spotdl
 
 # Load environment variables from .env file
 load_dotenv()
