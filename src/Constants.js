@@ -1,1 +1,1 @@
-export const API_URL = "https://mp3-player-navy.vercel.app"
+export const API_URL = "http://my-vm-jurko.eastus2.cloudapp.azure.com:8000"
