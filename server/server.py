@@ -5,7 +5,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from download_song import stream_song_to_firebase, upload_file_to_firebase
+from dotenv import load_dotenv
 
+load_dotenv()
 origins = [
     "http://localhost",
     "https://localhost",
