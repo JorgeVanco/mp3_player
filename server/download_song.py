@@ -82,7 +82,7 @@ def stream_song_to_firebase(
     song_name, author = get_song_metadata(spotify_url)
     print(song_name, author)
     # Create a blob in the bucket and upload the file
-    blob = bucket.blob(song_name + " - " + author + ".mp3")
+    blob = bucket.blob(author + " - " + song_name + ".mp3")
     # Step 3: Create a named pipe (FIFO)
     directory = "downloaded_songs"
     try:
