@@ -7,10 +7,11 @@ import { API_URL } from "../Constants";
 import axios from "axios";
 
 // const handleSubir = async (storage, setSubirMusica) => {
-const handleSubir = async (e, songUlr) => {
+const handleSubir = async (e, songUlr, setSongUrl) => {
     e.preventDefault()
     let response = await axios.post(API_URL + "/upload_music", {song_url: songUlr})
     console.log(response)
+    setSongUrl("")
     // const files = [...document.getElementById("file-selector").files];
     // const songsRef = doc(db, 'songs', 'songs');
 
@@ -82,7 +83,7 @@ const SubirMusicComponent = ({storage, isAuthorized}) =>  {
         
         {/* <button id = "subirMusicToggleButton" className="blue-btn center" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button> */}
         <div id = "music-url-div">
-            <form onSubmit={(e) => handleSubir(e, songUrl)}>
+            <form onSubmit={(e) => handleSubir(e, songUrl, setSongUrl)}>
                 <input type="text" name="song_url" id="music-url-input" value = {songUrl} onChange={(e) => setSongUrl(e.target.value)}></input>
                 <button className="submit blue-btn" type="submit">Subir Url</button>
             </form>    
