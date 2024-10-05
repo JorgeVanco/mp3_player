@@ -1,45 +1,48 @@
-import { getSongFormat } from "../functions/utils";
 import {ref, uploadBytes} from "firebase/storage";
 import { useState } from "react";
 import { db } from "../firebase_files/firebase_app";
 import {getDownloadURL} from "firebase/storage";
 import { doc, setDoc, updateDoc, arrayUnion} from "firebase/firestore"; 
-import { Node } from "../classes/LinkedList";
+import { API_URL } from "../Constants";
+import axios from "axios";
 
-const handleSubir = async (storage, setSubirMusica) => {
+// const handleSubir = async (storage, setSubirMusica) => {
+const handleSubir = async (e, songUlr) => {
+    e.preventDefault()
+    let response = await axios.post(API_URL + "/upload_music", {song_url: songUlr})
+    console.log(response)
+    // const files = [...document.getElementById("file-selector").files];
+    // const songsRef = doc(db, 'songs', 'songs');
 
-    const files = [...document.getElementById("file-selector").files];
-    const songsRef = doc(db, 'songs', 'songs');
-
-    // Upload all the files
-    files.forEach(async (file) => {
-        const storageRef = ref(storage, file.name);
-        uploadBytes(storageRef, file).then(async (snapshot) => {
+    // // Upload all the files
+    // files.forEach(async (file) => {
+    //     const storageRef = ref(storage, file.name);
+    //     uploadBytes(storageRef, file).then(async (snapshot) => {
         
-            // Upload completed successfully, now we can get the download URL
-            getDownloadURL(snapshot.ref).then((downloadURL) => {
+    //         // Upload completed successfully, now we can get the download URL
+    //         getDownloadURL(snapshot.ref).then((downloadURL) => {
 
-                let node = new Node(snapshot.ref._location.bucket, snapshot.ref._location.path_, downloadURL)
-                let newAtt = {}
+    //             let node = new Node(snapshot.ref._location.bucket, snapshot.ref._location.path_, downloadURL)
+    //             let newAtt = {}
 
-                // Get the song format
-                let [name, value] = getSongFormat(node)
-                newAtt[name] = value
+    //             // Get the song format
+    //             let [name, value] = getSongFormat(node)
+    //             newAtt[name] = value
 
-                // Update the songs document with the new song
-                try{
-                    updateDoc(songsRef, newAtt);
-                }catch (e){
-                    setDoc(songsRef, newAtt);
-                    console.log(e)
-                }
+    //             // Update the songs document with the new song
+    //             try{
+    //                 updateDoc(songsRef, newAtt);
+    //             }catch (e){
+    //                 setDoc(songsRef, newAtt);
+    //                 console.log(e)
+    //             }
 
-            });
-        })
-    });
+    //         });
+    //     })
+    // });
 
-    document.getElementById("file-selector").value = ""
-    setSubirMusica(false)
+    // document.getElementById("file-selector").value = ""
+    // setSubirMusica(false)
 }
 
 const handleSubirImagenes = async (storage, setSubirImagenes) => {
@@ -74,9 +77,16 @@ const handleSubirImagenes = async (storage, setSubirImagenes) => {
 const SubirMusicComponent = ({storage, isAuthorized}) =>  {
     const [subirMusica, setSubirMusica] = useState(false)
     const [subirImagenes, setSubirImagenes] = useState(false)
+    const [songUrl, setSongUrl] = useState("")
     return <>
         
-        <button id = "subirMusicToggleButton" className="blue-btn center" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button>
+        {/* <button id = "subirMusicToggleButton" className="blue-btn center" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button> */}
+        <div id = "music-url-div">
+            <form onSubmit={(e) => handleSubir(e, songUrl)}>
+                <input type="text" name="song_url" id="music-url-input" value = {songUrl} onChange={(e) => setSongUrl(e.target.value)}></input>
+                <button className="submit blue-btn" type="submit">Subir Url</button>
+            </form>    
+        </div>
         {
             isAuthorized ?
             <button id = "subirImageToggleButton" className="blue-btn center" onClick={() => setSubirImagenes(!subirImagenes)}>Subir imagenes</button>

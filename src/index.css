@@ -241,6 +241,34 @@ button{
   background-color: #285467;
   
 }
+#music-url-input{
+  width: 30%;
+  height: 2em;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px 0 0 5px ;
+  font-weight: bold;
+}
+
+
+#music-url-div{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+#music-url-div form{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+@media only screen and (max-width: 600px) {
+  #music-url-input{
+    width: 70%;
+  }
+}
 
 .center{
   position: absolute;
