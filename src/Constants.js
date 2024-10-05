@@ -1,1 +1,1 @@
-export const API_URL = "http://my-vm-jurko.eastus2.cloudapp.azure.com:8000"
+export const API_URL = "https://my-vm-jurko.eastus2.cloudapp.azure.com"
