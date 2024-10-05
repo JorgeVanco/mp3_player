@@ -80,7 +80,6 @@ def stream_song_to_firebase(
     # Get the Firebase storage bucket
     bucket = storage.bucket()
     song_name, author = get_song_metadata(spotify_url)
-    print(song_name, author)
     # Create a blob in the bucket and upload the file
     blob = bucket.blob(author + " - " + song_name + ".mp3")
     # Step 3: Create a named pipe (FIFO)
@@ -91,11 +90,7 @@ def stream_song_to_firebase(
             # Run the spotdl command as a subprocess
 
             song = spotdl_instance.search([spotify_url])
-            # song = [""]
-            print(len(song))
-            print(song)
 
-            print("Downloading song")
             try:
                 process = subprocess.Popen(
                     [
@@ -113,54 +108,20 @@ def stream_song_to_firebase(
                 print(e)
 
             process.wait()
-            print(process.returncode)
-            print(process.stderr)
-            print(process.stdout)
-            print("Process finished")
+
             if process.returncode == 0:
-                print("Song downloaded successfully.")
-                print("os.listdir(tempdir)", os.listdir(directory))
+
                 for file_name in os.listdir(directory):
                     if file_name.endswith(".mp3"):
-                        print(file_name, "found")
                         mp3_path = os.path.join(directory, file_name)
 
-                        print("FInnished playing")
                         blob.upload_from_filename(mp3_path, content_type="audio/mpeg")
-                        # with open(mp3_path, "rb") as f:
-                        #     # buffer = io.BytesIO(f.read())
-                        #     blob.upload_from_file(f, content_type="audio/mpeg")
-                # buffer = io.BytesIO()
-                # for chunk in iter(lambda: process.stdout.read(4096), b""):
-                #     buffer.write(chunk)
-                # total_bytes = 0
-                # while True:
-                #     print("ok")
-                #     chunk = process.stdout.read(4096)  # Read 4096-byte chunks
-                #     if not chunk:  # If chunk is empty, we are at the end of the stream
-                #         break
-                #     buffer.write(chunk)
-                #     total_bytes += len(chunk)
 
-                # print(f"Total bytes written to buffer: {total_bytes}")
-                print("FInnished")
-                # while True:
-                #     chunk = process.stdout  # .read(4096)  # Read 4096-byte chunks
-                #     if not chunk:  # If chunk is empty, we are at the end of the stream
-                #         break
-                #     buffer.write(chunk)
-
-                # Once the download is finished, upload the entire buffer to Firebase
-                # buffer.seek(0)  # Reset buffer pointer to the beginning
-                # blob.upload_from_file(buffer, content_type="audio/mpeg")
                 # Make the file public (optional)
                 blob.make_public()
                 print(
                     f"File streamed and uploaded successfully to Firebase Storage at {blob.public_url}"
                 )
-
-                # Close the buffer
-                # buffer.close()
 
                 # Wait for the process to finish
 
@@ -192,10 +153,3 @@ def stream_song_to_firebase(
 
 def upload_file_to_firebase():
     pass
-
-
-#     try:
-
-
-#     except Exception as e:
-#         print(f"An error occurred: {e}")
