@@ -4,7 +4,7 @@ import uvicorn
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from download_song import stream_song_to_firebase, upload_file_to_firebase
+from download_song import stream_song_to_firebase
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -125,7 +125,7 @@ async def add_song_reproduction(song: Song):
 async def upload_music(songUrl: SongUrl):
     dir = "downloaded_songs/"
 
-    stream_song_to_firebase(songUrl.song_url, dir, "path", "", "file")
+    return stream_song_to_firebase(songUrl.song_url, dir, "path", "", "file")
 
 
 if __name__ == "__main__":

@@ -70,8 +70,15 @@ def get_song_metadata(spotify_url):
     artist_name = ", ".join(
         artist["name"] for artist in track["artists"]
     )  # Multiple artists could exist, taking the first one
+    print(track)
+    metadata = {
+        "song_title": song_title,
+        "artist_name": artist_name,
+        # "genres": track["genres"],
+        # "published_date": track["date"],
+    }
 
-    return song_title, artist_name
+    return metadata
 
 
 def stream_song_to_firebase(
@@ -79,17 +86,23 @@ def stream_song_to_firebase(
 ):
     # Get the Firebase storage bucket
     bucket = storage.bucket()
-    song_name, author = get_song_metadata(spotify_url)
+    song = spotdl_instance.search([spotify_url])[0]
+    print(song)
+    metadata = dict()
+    metadata["genres"] = song.genres
+    metadata["published_date"] = song.date
+    metadata["song_name"] = song.name
+    metadata["author"] = ", ".join(song.artists)
+    # metadata = get_song_metadata(spotify_url)
+    song_name, author = metadata["song_name"], metadata["author"]
     # Create a blob in the bucket and upload the file
     blob = bucket.blob(author + " - " + song_name + ".mp3")
     # Step 3: Create a named pipe (FIFO)
-    directory = "downloaded_songs"
+    # directory = "downloaded_songs"
     try:
         with tempfile.TemporaryDirectory() as tempdir:
 
             # Run the spotdl command as a subprocess
-
-            song = spotdl_instance.search([spotify_url])
 
             try:
                 process = subprocess.Popen(
@@ -99,7 +112,7 @@ def stream_song_to_firebase(
                         "spotdl",
                         spotify_url,
                         "--output",
-                        directory,
+                        tempdir,
                         "--cookie-file",
                         "cookies.txt",
                     ],
@@ -111,9 +124,9 @@ def stream_song_to_firebase(
 
             if process.returncode == 0:
 
-                for file_name in os.listdir(directory):
+                for file_name in os.listdir(tempdir):
                     if file_name.endswith(".mp3"):
-                        mp3_path = os.path.join(directory, file_name)
+                        mp3_path = os.path.join(tempdir, file_name)
 
                         blob.upload_from_filename(mp3_path, content_type="audio/mpeg")
 
@@ -137,19 +150,20 @@ def stream_song_to_firebase(
                     "url": blob.public_url,
                     "author": author,
                     "songName": song_name,
+                    "genres": metadata["genres"],
+                    "publishedDate": metadata["published_date"],
                 }
                 name = song_name + " - " + author
 
                 songs_ref = db.collection("songs").document("songs")
-                print({db.field_path(name): data})
-                songs_ref.update({db.field_path(name): data})
+                song_values = {db.field_path(name): data}
+                songs_ref.update(song_values)
                 print("Song is now live")
+                return song_values
             else:
                 print(f"Error downloading song: {process.stderr}")
+                return {"message": "Could not download the song"}
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
-
-def upload_file_to_firebase():
-    pass
+        return {"message": "An error ocurred"}
