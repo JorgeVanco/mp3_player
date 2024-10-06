@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from download_song import stream_song_to_firebase
 from dotenv import load_dotenv
+import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+from contextlib import asynccontextmanager
 
 load_dotenv()
 origins = [
@@ -42,38 +45,19 @@ class SongUrl(BaseModel):
     song_url: str
 
 
-app = FastAPI()
+@asynccontextmanager
+async def start_scheduler(app: FastAPI):
+    scheduler = BackgroundScheduler()
+    # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
+    d = datetime.datetime.now()
+    print(f"THE CURRENT HOUR IS {d.hour}:{d.minute}, THE HOUR TO RUN IS {9}:{0}")
+    scheduler.add_job(update_reproduction_score, "cron", hour=9, minute=0)
+    scheduler.start()
+    yield
+    scheduler.shutdown()
 
 
-# @asynccontextmanager
-# def start_scheduler(app: FastAPI):
-# @app.post("/scheduler")
-# def start_scheduler(hour: Hour) -> None:
-#     scheduler = BackgroundScheduler()
-#     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-#     d = datetime.datetime.now()
-#     print(
-#         f"THE CURRENT HOUR IS {d.hour}:{d.minute}, THE HOUR TO RUN IS {hour.hour}:{hour.minute}"
-#     )
-#     scheduler.add_job(
-#         update_reproduction_score, "cron", hour=hour.hour, minute=hour.minute
-#     )
-#     scheduler.start()
-#     return {"message": "Scheduler started successfully"}
-
-
-# app = FastAPI(lifespan=start_scheduler)
-
-
-# @app.on_event("startup")
-# async def startup_db_client():
-#     print("startup")
-#     scheduler = BackgroundScheduler()
-#     # Schedule the function to run daily at a specific time (e.g., 2:30 PM)
-#     d = datetime.datetime.now()
-#     print(f"THE CURRENT HOUR IS {d.hour}:{d.minute}")
-#     scheduler.add_job(update_reproduction_score, "cron", hour=22, minute=34)
-#     scheduler.start()
+app = FastAPI(lifespan=start_scheduler)
 
 
 app.add_middleware(
@@ -86,7 +70,7 @@ app.add_middleware(
 
 
 @app.get("/update_scores")
-async def update_reproduction_score() -> None:
+def update_reproduction_score() -> None:
     print("Updating reproduction score")
     song_order_collection.update_many(
         {},  # Empty filter means update all documents
