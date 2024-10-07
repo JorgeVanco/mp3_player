@@ -60,29 +60,9 @@ const handleSubmit = async(e, user, db, songsToAdd, nodeConverter, listaElegida,
         if (setSearchWord){
             setSearchWord("")
         }
-        setReload(true)
         getListas(user, setListas)
     })
-    // setReload(true)
-    // addListToListsDoc(listas, setListas, db, listaElegidaAnadir).then(() => {
-    //     setListaElegida("")
-    //     setNombreListaNueva("")
-    //     setListForm(false)
-        
-    //     if(setAbrir){
-    //         setAbrir(false)
-    //     }
-    //     if(setHacerGrande){
-    //         setHacerGrande(false)
-    //     }
-    //     if (setCancionesSeleccionadas !== null){
-    //         setCancionesSeleccionadas([])
-    //     }
-    //     if (setSearchWord){
-    //         setSearchWord("")
-    //     }
-    //     setReload(true)
-    // })
+
 }
 
 const handleCancel = (e, setListForm, setListaElegida, setNombreListaNueva, setHacerGrande) => {
