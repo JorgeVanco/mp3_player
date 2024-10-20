@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useContext } from "react";
 import AddListaForm from "./AddListaForm";
 import {RiRepeat2Line, RiRepeatOneLine} from "react-icons/ri"
 import { doc, setDoc, getDoc, collection} from "firebase/firestore";
@@ -14,103 +14,6 @@ import axios from "axios"
 import {API_URL} from "../Constants"
 import LogInButton from "./LogInButton";
 
-const updateEscuchas = async(song_name, song_author) => {
-    axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author})
-
-}
-
-const handleNext = (e, currentSong, setCurrentSong, audioRef, songList) => {
-
-    e.stopPropagation();
-
-    const fractionListened = audioRef.currentTime / audioRef.duration;
-    const song_name = currentSong.songName;
-    const song_author = currentSong.author;
-
-    if (currentSong.next != null){
-        setCurrentSong(currentSong.next)
-    }else{
-        setCurrentSong(songList.head)
-    }
-    if (fractionListened >= 0.75) {
-        updateEscuchas(song_name, song_author)
-    }
-}
-
-const handlePrev = (e, currentSong, setCurrentSong, audioRef) => {
-
-    e.stopPropagation();
-
-
-    const fractionListened = audioRef.currentTime / audioRef.duration;
-    const song_name = currentSong.songName;
-    const song_author = currentSong.author;
-
-    if (currentSong.prev != null){
-        setCurrentSong(currentSong.prev)
-    }
-    if (fractionListened >= 0.75) {
-        updateEscuchas(song_name, song_author)
-    }
-}
-
-const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef, songList) => {
-    if (!repeat){
-        handleNext(e, currentSong, setCurrentSong, audioRef, songList)
-    }else{
-        e.stopPropagation();
-        e.target.play()
-
-        const song_name = currentSong.songName;
-        const song_author = currentSong.author;
-
-        updateEscuchas(song_name, song_author)
-        
-        if (repeatState === 2){
-            setRepeat(false)
-        }
-    }
-
-}
-
-const changeRepeatState = (e, setRepeatState, repeatState) => {
-
-    e.stopPropagation();
-
-    setRepeatState((repeatState + 1) % 3)
-
-}
-
-
-
-const toggleSmallCard = (smallCard, setSmallCard, setTab) => {
-    if (smallCard){
-        setTab(0)
-    }
-    setSmallCard(!smallCard)
-}
-
-const rewind = (e, audioRef, time) => {
-    e.stopPropagation();
-    audioRef.currentTime += time
-}
-
-const progressBarClick = (e, audioRef, progressBarRef) => {
-    e.stopPropagation();
-
-    const rect = progressBarRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const width = rect.width;
-    const percentage = x / width;
-    audioRef.currentTime = audioRef.duration * percentage
-}
-
-const shuffle = (e, songList, setCurrentSong) => {
-    e.stopPropagation()
-
-    songList.shuffleList()
-    setCurrentSong(songList.head)
-}
 
 const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, listas, setListas, setCancionesSeleccionadas, setReload, smallCard, setSmallCard, setTab, songList, setSongList, setTodasLasCanciones, audioRef, setAudioRef, isPaused, setIsPaused, user, setUser}) => {
     const [hacerGrande, setHacerGrande] = useState(false) 
@@ -128,6 +31,103 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
     
     })
 
+    const updateEscuchas = async(song_name, song_author) => {
+        axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author})
+    
+    }
+
+    const handleNext = (e, currentSong, setCurrentSong, audioRef, songList) => {
+
+        e.stopPropagation();
+    
+        const fractionListened = audioRef.currentTime / audioRef.duration;
+        const song_name = currentSong.songName;
+        const song_author = currentSong.author;
+    
+        if (currentSong.next != null){
+            setCurrentSong(currentSong.next)
+        }else{
+            setCurrentSong(songList.head)
+        }
+        if (fractionListened >= 0.75) {
+            updateEscuchas(song_name, song_author)
+        }
+    }
+    
+    const handlePrev = (e, currentSong, setCurrentSong, audioRef) => {
+    
+        e.stopPropagation();
+    
+    
+        const fractionListened = audioRef.currentTime / audioRef.duration;
+        const song_name = currentSong.songName;
+        const song_author = currentSong.author;
+    
+        if (currentSong.prev != null){
+            setCurrentSong(currentSong.prev)
+        }
+        if (fractionListened >= 0.75) {
+            updateEscuchas(song_name, song_author)
+        }
+    }
+    
+    const handleEnd = (e, currentSong, setCurrentSong, setRepeat, repeatState, repeat, audioRef, songList) => {
+        if (!repeat){
+            handleNext(e, currentSong, setCurrentSong, audioRef, songList)
+        }else{
+            e.stopPropagation();
+            e.target.play()
+    
+            const song_name = currentSong.songName;
+            const song_author = currentSong.author;
+    
+            updateEscuchas(song_name, song_author)
+            
+            if (repeatState === 2){
+                setRepeat(false)
+            }
+        }
+    
+    }
+    
+    const changeRepeatState = (e, setRepeatState, repeatState) => {
+    
+        e.stopPropagation();
+    
+        setRepeatState((repeatState + 1) % 3)
+    
+    }
+    
+    
+    
+    const toggleSmallCard = (smallCard, setSmallCard, setTab) => {
+        if (smallCard){
+            setTab(0)
+        }
+        setSmallCard(!smallCard)
+    }
+    
+    const rewind = (e, audioRef, time) => {
+        e.stopPropagation();
+        audioRef.currentTime += time
+    }
+    
+    const progressBarClick = (e, audioRef, progressBarRef) => {
+        e.stopPropagation();
+    
+        const rect = progressBarRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const width = rect.width;
+        const percentage = x / width;
+        audioRef.currentTime = audioRef.duration * percentage
+    }
+    
+    const shuffle = (e, songList, setCurrentSong) => {
+        e.stopPropagation()
+    
+        songList.shuffleList()
+        setCurrentSong(songList.head)
+    }
     
     useEffect(() => {
         if (repeatState > 0){

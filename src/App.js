@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet';
 import {useEffect, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import Cookies from 'universal-cookie';
+import React, { useContext } from 'react';
+import { MyContext } from './Context';
 
 // Firebase
 import {getStorage} from "firebase/storage";
@@ -72,7 +74,8 @@ function App() {
   const [title, setTitle] = useState("Escucha música")
   const [reload, setReload] = useState(false)
   const [tab, setTab] = useState(0)
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
+  const { user, setUser } = useContext(MyContext);
   const [smallCard, setSmallCard] = useState(false)
 
   const [audioRef, setAudioRef] = useState(null)

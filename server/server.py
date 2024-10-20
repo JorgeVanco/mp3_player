@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
+from typing import Optional
 
 load_dotenv()
 origins = [
@@ -29,11 +30,13 @@ myclient = pymongo.MongoClient(
 )
 mydb = myclient["mp3_player_db"]
 song_order_collection = mydb["song_order"]
+user_collection = mydb["mp3_player_users"]
 
 
 class Song(BaseModel):
     song_name: str
     author: str
+    user: Optional[str]
 
 
 class Hour(BaseModel):
@@ -102,6 +105,14 @@ async def add_song_reproduction(song: Song):
         {"$inc": {"reproduction_score": 1, "total_reproductions": 1}},
         upsert=True,
     )
+
+    if song.user is not None:
+        user_collection.update_one(
+            {"song_name": song_name, "author": song.author},
+            {"$inc": {"total_reproductions": 1}},
+            upsert=True,
+        )
+
     return {"message": "Reproductions added successfully"}
 
 
