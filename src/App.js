@@ -3,6 +3,7 @@ import './App.css';
 import { Helmet } from 'react-helmet';
 import {useEffect, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import Cookies from 'universal-cookie';
 
 // Firebase
 import {getStorage} from "firebase/storage";
@@ -86,6 +87,8 @@ function App() {
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [autoChange, setAutoChange] = useState(true)
 
+  const cookies = new Cookies();
+
   const handlers = useSwipeable({
     onSwipedRight: () => handleImageChange(((imageIdx - 1) % imageIdxLength + imageIdxLength) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
     onSwipedLeft: () => handleImageChange((imageIdx + 1) % imageIdxLength, imageIdx, setImageIdx, backgroundImages, expanded, setBackgroundImages),
@@ -160,6 +163,7 @@ function App() {
       setTitle("Escucha música")
     }else{
       setTitle(currentSong.songName + " - " + currentSong.author)
+      cookies.set("lastSong", currentSong.songName + "_" + currentSong.author)
     }
     
   }, [currentSong])

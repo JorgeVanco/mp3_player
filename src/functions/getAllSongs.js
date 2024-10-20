@@ -1,9 +1,9 @@
 import { LinkedList, Node } from "../classes/LinkedList";
-import readDb from './readDb';
 import { db } from "../firebase_files/firebase_app";
-import {getFromDict, millisecondsToDays} from "../functions/utils"
+import {getFromDict} from "../functions/utils"
 import axios from "axios"
 import {API_URL} from "../Constants"
+import Cookies from "universal-cookie";
 
 import { doc, getDoc} from "firebase/firestore";
 
@@ -34,6 +34,9 @@ const createSongLinkedList = async (items, scores, storage, setSongList, setCurr
   setTodasLasCanciones(newSongList)
   setSongList(newSongList)
 
+  const cookies = new Cookies();
+  let lastSong = cookies.get("lastSong")
+  scores[lastSong] = Infinity
   songNodes = sortByRanking(songNodes, scores)
 
   songNodes.forEach((node) => {
@@ -52,21 +55,19 @@ const sortByRanking = (items, rankings) => {
   .map(([, item]) => item); // extract the sorted items
 }
   
-const sortByPreferences = async (items, storage, setSongList, setCurrentSong, setTodasLasCanciones) => {
-  let gamma = 0.90;
+const getSongsFromDBandCreateLinkedList = async (items, storage, setSongList, setCurrentSong, setTodasLasCanciones) => {
 
   // Date from 2 months ago
   let date = new Date();
   date.setDate(date.getDate() - 31 * 2)
-  
-  // let q = query(collection(db, "ESCUCHAS"), where("date", ">=", date));
+
   let baseURL = API_URL + "/songs"
   let scores = {};
   await axios.get(baseURL).then((response) => {
     scores = response.data;
     createSongLinkedList(items, scores, storage, setSongList, setCurrentSong, setTodasLasCanciones)
   });
-  // Calculate scores
+
 }
 
 
@@ -74,7 +75,7 @@ const getAllSongs = async(storage, setSongList, setCurrentSong, setTodasLasCanci
   let items = await getMusic(storage)
   // Ordenar items
   // Y crear la lista enlazada con todas las canciones
-  sortByPreferences(items, storage, setSongList, setCurrentSong, setTodasLasCanciones).then((items) => {
+  getSongsFromDBandCreateLinkedList(items, storage, setSongList, setCurrentSong, setTodasLasCanciones).then((items) => {
   })
 
 }
