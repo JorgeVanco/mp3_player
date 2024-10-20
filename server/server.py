@@ -30,13 +30,13 @@ myclient = pymongo.MongoClient(
 )
 mydb = myclient["mp3_player_db"]
 song_order_collection = mydb["song_order"]
-user_collection = mydb["mp3_player_users"]
+user_reproductions_collection = mydb["mp3_player_user_reproductions"]
 
 
 class Song(BaseModel):
     song_name: str
     author: str
-    user: Optional[str]
+    user: Optional[str] = None
 
 
 class Hour(BaseModel):
@@ -107,8 +107,9 @@ async def add_song_reproduction(song: Song):
     )
 
     if song.user is not None:
-        user_collection.update_one(
-            {"song_name": song_name, "author": song.author},
+        print(song.user)
+        user_reproductions_collection.update_one(
+            {"song_name": song_name, "author": song.author, "user": song.user},
             {"$inc": {"total_reproductions": 1}},
             upsert=True,
         )

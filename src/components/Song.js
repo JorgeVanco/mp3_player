@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useRef, useState, useContext } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AddListaForm from "./AddListaForm";
 import {RiRepeat2Line, RiRepeatOneLine} from "react-icons/ri"
-import { doc, setDoc, getDoc, collection} from "firebase/firestore";
-import {db} from "../firebase_files/firebase_app"
 
 import { playSong, pauseSong } from "../functions/songFunctions";
 
@@ -32,7 +30,8 @@ const Song = ({currentSong, setCurrentSong, db, songsToAdd, nodeConverter, lista
     })
 
     const updateEscuchas = async(song_name, song_author) => {
-        axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author})
+        console.log({"song_name": song_name, "author": song_author, "user": user?.email})
+        axios.post(API_URL + "/reproductions", {"song_name": song_name, "author": song_author, "user": user?.email})
     
     }
 
