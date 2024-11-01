@@ -227,6 +227,7 @@ button{
 
 #subirMusicToggleButton{
   position: absolute;
+  top: 40%;
 }
 
 #subirImageToggleButton{
