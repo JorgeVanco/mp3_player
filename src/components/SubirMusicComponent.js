@@ -16,39 +16,7 @@ const handleSubir = async (e, songUlr, setSongUrl) => {
     setSongUrl("")
 }
 
-const handleSubirFiles = async (storage, setSubirMusica) => {
-    const files = [...document.getElementById("file-selector").files];
-    const songsRef = doc(db, 'songs', 'songs');
 
-    // Upload all the files
-    files.forEach(async (file) => {
-        const storageRef = ref(storage, file.name);
-        uploadBytes(storageRef, file).then(async (snapshot) => {
-        
-            // Upload completed successfully, now we can get the download URL
-            getDownloadURL(snapshot.ref).then((downloadURL) => {
-                let node = new Node(snapshot.ref._location.bucket, snapshot.ref._location.path_, downloadURL)
-                let newAtt = {}
-
-                // Get the song format
-                let [name, value] = getSongFormat(node)
-                newAtt[name] = value
-
-                // Update the songs document with the new song
-                try{
-                    updateDoc(songsRef, newAtt);
-                }catch (e){
-                    setDoc(songsRef, newAtt);
-                    console.log(e)
-                }
-
-            });
-        })
-    });
-
-    document.getElementById("file-selector").value = ""
-    setSubirMusica(false)
-}
 
 const handleSubirImagenes = async (storage, setSubirImagenes) => {
     const files = [...document.getElementById("file-selector").files];
@@ -79,10 +47,49 @@ const handleSubirImagenes = async (storage, setSubirImagenes) => {
 }
 
 
-const SubirMusicComponent = ({storage, isAuthorized}) =>  {
+const SubirMusicComponent = ({storage, isAuthorized, todasLasCanciones, setCurrentSong}) =>  {
     const [subirMusica, setSubirMusica] = useState(false)
     const [subirImagenes, setSubirImagenes] = useState(false)
     const [songUrl, setSongUrl] = useState("")
+
+    const handleSubirFiles = async () => {
+        const files = [...document.getElementById("file-selector").files];
+        const songsRef = doc(db, 'songs', 'songs');
+    
+        // Upload all the files
+        files.forEach(async (file) => {
+            const storageRef = ref(storage, file.name);
+            uploadBytes(storageRef, file).then(async (snapshot) => {
+            
+                // Upload completed successfully, now we can get the download URL
+                getDownloadURL(snapshot.ref).then((downloadURL) => {
+                    let node = new Node(snapshot.ref._location.bucket, snapshot.ref._location.path_, downloadURL)
+                    
+                    todasLasCanciones.addNode(node)
+                    setCurrentSong(node)
+                    
+                    let newAtt = {}
+    
+                    // Get the song format
+                    let [name, value] = getSongFormat(node)
+                    newAtt[name] = value
+    
+                    // Update the songs document with the new song
+                    try{
+                        updateDoc(songsRef, newAtt);
+                    }catch (e){
+                        setDoc(songsRef, newAtt);
+                        console.log(e)
+                    }
+    
+                });
+            })
+        });
+    
+        document.getElementById("file-selector").value = ""
+        setSubirMusica(false)
+    }
+
     return <>
         
         <button id = "subirMusicToggleButton" className="blue-btn center" onClick={() => setSubirMusica(!subirMusica)}>Subir música</button>
@@ -103,7 +110,7 @@ const SubirMusicComponent = ({storage, isAuthorized}) =>  {
                 <div className = "blockingDiv">
                     <div  id = {"subirMusicDiv"}>
                         <input type="file" id="file-selector" multiple="multiple" accept=".mp3"></input>
-                        <button className="subirMusicButton submitBtnMusicSubir" onClick={() => handleSubirFiles(storage, setSubirMusica)}>Subir</button>
+                        <button className="subirMusicButton submitBtnMusicSubir" onClick={() => handleSubirFiles()}>Subir</button>
                         <button className={"subirMusicButton cancelBtn"} onClick={() => setSubirMusica(false)}>Cancel</button>
                     </div>
                     </div>

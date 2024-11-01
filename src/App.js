@@ -198,7 +198,7 @@ function App() {
   }else if(tab === 2){
     page = <SelectListaComponent user = {user} currentSong={currentSong} setUser={setUser} listas = {listas} setSongList = {setSongList} songList = {songList} listaActual = {listaActual} setListaActual = {setListaActual} setCurrentSong = {setCurrentSong} setTodasLasCanciones={setTodasLasCanciones} setListas = {setListas} audioRef = {audioRef} setIsPaused={setIsPaused} isPaused={isPaused}></SelectListaComponent>
   }else if(tab === 3){
-    page = <><SubirMusicComponent isAuthorized={isAuthorized} storage = {storage} setSongList = {setSongList} setCurrentSong = {setCurrentSong} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
+    page = <><SubirMusicComponent isAuthorized={isAuthorized} storage = {storage} songList={songList} setSongList = {setSongList} setCurrentSong = {setCurrentSong} todasLasCanciones={todasLasCanciones} setTodasLasCanciones = {setTodasLasCanciones} setListas = {setListas}></SubirMusicComponent></>
   }else if(tab === 4){
     page = <UserPage user = {user} setUser = {setUser}></UserPage>
   }
