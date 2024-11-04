@@ -55,6 +55,10 @@ class LinkedList {
         }else{
             if (this.head.prev !== null){
                 node = this.head.prev
+            }else{
+                while (node.next != null){
+                    node = node.next
+                }
             }
             
             node.next = newNode
