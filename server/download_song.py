@@ -7,6 +7,7 @@ import re
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import tempfile
+from yt_dlp import YoutubeDL
 
 from spotdl import Spotdl
 
@@ -64,18 +65,25 @@ def get_song_metadata(spotify_url):
 
     # Fetch the track metadata using the Spotify Web API
     track = spotify.track(track_id)
+    
+    # Get additional metadata from artist and album
+    artist_id = track["artists"][0]["id"]
+    album_id = track["album"]["id"]
+    
+    artist = spotify.artist(artist_id)
+    album = spotify.album(album_id)
 
     # Extract song title and artist name
     song_title = track["name"]
     artist_name = ", ".join(
         artist["name"] for artist in track["artists"]
-    )  # Multiple artists could exist, taking the first one
-    print(track)
+    )
+    
     metadata = {
         "song_title": song_title,
         "artist_name": artist_name,
-        # "genres": track["genres"],
-        # "published_date": track["date"],
+        "genres": artist["genres"],
+        "published_date": album["release_date"],
     }
 
     return metadata
@@ -86,64 +94,52 @@ def stream_song_to_firebase(
 ):
     # Get the Firebase storage bucket
     bucket = storage.bucket()
-    song = spotdl_instance.search([spotify_url])[0]
-    print(song)
-    metadata = dict()
-    metadata["genres"] = song.genres
-    metadata["published_date"] = song.date
-    metadata["song_name"] = song.name
-    metadata["author"] = ", ".join(song.artists)
-    # metadata = get_song_metadata(spotify_url)
-    song_name, author = metadata["song_name"], metadata["author"]
+    
+    # Get song metadata from Spotify
+    metadata = get_song_metadata(spotify_url)
+    song_name, author = metadata["song_title"], metadata["artist_name"]
+    
+    # Create a YouTube search query using the metadata
+    search_query = f"ytsearch:{author} - {song_name} official audio"
+    
     # Create a blob in the bucket and upload the file
     blob = bucket.blob(author + " - " + song_name + ".mp3")
-    # Step 3: Create a named pipe (FIFO)
-    # directory = "downloaded_songs"
+    
     try:
         with tempfile.TemporaryDirectory() as tempdir:
+            # Set the output path for the downloaded file
+            output_file = os.path.join(tempdir, f"{author} - {song_name}")
+            
+            # Configure yt-dlp options for download
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+                'outtmpl': output_file,
+                'quiet': False,
+                'noplaylist': True,
+            }
+            
+            # Download the audio from YouTube
+            with YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(search_query, download=True)
+                # The downloaded file will have an .mp3 extension added
+                mp3_file = f"{output_file}.mp3"
+            
+            # Check if file exists and upload to Firebase
+            if os.path.exists(mp3_file):
+                blob.upload_from_filename(mp3_file, content_type="audio/mpeg")
 
-            # Run the spotdl command as a subprocess
-
-            try:
-                process = subprocess.Popen(
-                    [
-                        "python",
-                        "-m",
-                        "spotdl",
-                        spotify_url,
-                        "--output",
-                        tempdir,
-                        "--cookie-file",
-                        "cookies.txt",
-                    ],
-                )
-            except Exception as e:
-                print(e)
-
-            process.wait()
-
-            if process.returncode == 0:
-
-                for file_name in os.listdir(tempdir):
-                    if file_name.endswith(".mp3"):
-                        mp3_path = os.path.join(tempdir, file_name)
-
-                        blob.upload_from_filename(mp3_path, content_type="audio/mpeg")
-
-                # Make the file public (optional)
+                # Make the file public
                 blob.make_public()
                 print(
-                    f"File streamed and uploaded successfully to Firebase Storage at {blob.public_url}"
+                    f"File downloaded and uploaded successfully to Firebase Storage at {blob.public_url}"
                 )
 
-                # Wait for the process to finish
-
-                name = blob.name[:-4].replace("_", " ")
-                regex = re.compile(r"\((.*?)\)|\[(.*?)\]")
-                clean = re.sub(regex, "", name)
-                clean = clean.strip()
-                print(clean)
-                author, song_name = clean.split(" - ")
+                # Prepare data for Firestore
                 data = {
                     "bucket": BUCKET,
                     "path": blob.name,
@@ -155,15 +151,16 @@ def stream_song_to_firebase(
                 }
                 name = song_name + " - " + author
 
+                # Update Firestore document
                 songs_ref = db.collection("songs").document("songs")
                 song_values = {db.field_path(name): data}
                 songs_ref.update(song_values)
                 print("Song is now live")
                 return song_values
             else:
-                print(f"Error downloading song: {process.stderr}")
+                print(f"Error: Downloaded file not found at {mp3_file}")
                 return {"message": "Could not download the song"}
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return {"message": "An error ocurred"}
+        return {"message": f"An error occurred: {str(e)}"}
