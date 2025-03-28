@@ -99,9 +99,6 @@ def stream_song_to_firebase(
     metadata = get_song_metadata(spotify_url)
     song_name, author = metadata["song_title"], metadata["artist_name"]
     
-    # Create a YouTube search query using the metadata
-    search_query = f"ytsearch:{author} - {song_name} official audio"
-    
     # Create a blob in the bucket and upload the file
     blob = bucket.blob(author + " - " + song_name + ".mp3")
     
@@ -110,7 +107,7 @@ def stream_song_to_firebase(
             # Set the output path for the downloaded file
             output_file = os.path.join(tempdir, f"{author} - {song_name}")
             
-            # Configure yt-dlp options for download
+            # Configure yt-dlp options with anti-bot detection measures
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'postprocessors': [{
@@ -121,16 +118,44 @@ def stream_song_to_firebase(
                 'outtmpl': output_file,
                 'quiet': False,
                 'noplaylist': True,
+                'nocheckcertificate': True,
+                'ignoreerrors': True,
+                'no_warnings': True,
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
+                'referer': 'https://www.google.com/',
+                'cookiefile': 'cookies.txt',  # Crea un archivo cookies.txt vacío
+                'geo_bypass': True,
+                'geo_bypass_country': 'US',
+                'extractor_retries': 3,
+                'socket_timeout': 30,
             }
             
-            # Download the audio from YouTube
-            with YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(search_query, download=True)
-                # The downloaded file will have an .mp3 extension added
-                mp3_file = f"{output_file}.mp3"
+            # Construct a more general search query
+            search_query = f"{author} {song_name} audio"
+            
+            # Try multiple sources in order of preference
+            sources = [
+                f"ytsearch:{search_query}",
+                f"scsearch:{search_query}",
+                f"dzsearch:{search_query}",
+            ]
+            
+            mp3_file = None
+            for source in sources:
+                try:
+                    print(f"Trying source: {source}")
+                    with YoutubeDL(ydl_opts) as ydl:
+                        info = ydl.extract_info(source, download=True)
+                        mp3_file = f"{output_file}.mp3"
+                        if os.path.exists(mp3_file):
+                            print(f"Successfully downloaded from {source}")
+                            break
+                except Exception as e:
+                    print(f"Failed with {source}: {str(e)}")
+                    continue
             
             # Check if file exists and upload to Firebase
-            if os.path.exists(mp3_file):
+            if mp3_file and os.path.exists(mp3_file):
                 blob.upload_from_filename(mp3_file, content_type="audio/mpeg")
 
                 # Make the file public
@@ -158,8 +183,8 @@ def stream_song_to_firebase(
                 print("Song is now live")
                 return song_values
             else:
-                print(f"Error: Downloaded file not found at {mp3_file}")
-                return {"message": "Could not download the song"}
+                print("Error: Could not download the song from any source")
+                return {"message": "Could not download the song from any source"}
 
     except Exception as e:
         print(f"An error occurred: {e}")
