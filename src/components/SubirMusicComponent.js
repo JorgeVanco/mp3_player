@@ -46,10 +46,15 @@ const SubirMusicComponent = ({
   const [subirMusica, setSubirMusica] = useState(false);
   const [subirImagenes, setSubirImagenes] = useState(false);
   const [songUrl, setSongUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // const handleSubir = async (storage, setSubirMusica) => {
   const handleSubir = async (e, songUlr, setSongUrl) => {
     e.preventDefault();
+    if (songUlr === "") {
+      return;
+    }
+    setLoading(true);
     setSongUrl("");
     let response = await axios.post(API_URL + "/upload_music", {
       song_url: songUlr,
@@ -68,10 +73,12 @@ const SubirMusicComponent = ({
     if (response.ok) {
       alert("Canción subida correctamente");
     }
+    setLoading(false);
     //   setCurrentSong,
   };
 
   const handleSubirFiles = async () => {
+    setLoading(true);
     const files = [...document.getElementById("file-selector").files];
     const songsRef = doc(db, "songs", "songs");
 
@@ -103,6 +110,7 @@ const SubirMusicComponent = ({
             setDoc(songsRef, newAtt);
             console.log(e);
           }
+          setLoading(false);
         });
       });
     });
@@ -127,13 +135,15 @@ const SubirMusicComponent = ({
             name="song_url"
             id="music-url-input"
             value={songUrl}
+            disabled={loading}
             onChange={(e) => setSongUrl(e.target.value)}
           ></input>
           <button
             className="submit blue-btn"
             type="submit"
+            disabled={loading}
           >
-            Subir Url
+            {loading ? "Uploading..." : "Subir Url"}
           </button>
         </form>
       </div>
@@ -155,12 +165,14 @@ const SubirMusicComponent = ({
               id="file-selector"
               multiple="multiple"
               accept=".mp3"
+              disabled={loading}
             ></input>
             <button
               className="subirMusicButton submitBtnMusicSubir"
+              disabled={loading}
               onClick={() => handleSubirFiles()}
             >
-              Subir
+              {loading ? "Uploading..." : "Subir música"}
             </button>
             <button
               className={"subirMusicButton cancelBtn"}
