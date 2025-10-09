@@ -25,7 +25,7 @@ yarn-error.log*
 audios
 .firebase
 storage.rules
-.github
+
 
 .pytest_cache
 
