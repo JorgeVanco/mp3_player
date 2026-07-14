@@ -170,6 +170,54 @@ const Song = ({
     return () => clearInterval(interval);
   }, [audioRef]);
 
+
+  // Media Session: lets hardware buttons (earbuds, Bluetooth headsets,
+  // lock screen, smartwatches) control playback, and shows track info
+  // on the lock screen / notification.
+  useEffect(() => {
+    if (!("mediaSession" in navigator) || currentSong == null) return;
+
+    navigator.mediaSession.metadata = new window.MediaMetadata({
+      title: currentSong.songName || "Unknown title",
+      artist: currentSong.author || "Unknown artist",
+      artwork: currentSong.artworkUrl
+        ? [
+            { src: currentSong.artworkUrl, sizes: "96x96", type: "image/png" },
+            { src: currentSong.artworkUrl, sizes: "512x512", type: "image/png" },
+          ]
+        : [],
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => {
+      if (audioRef) { audioRef.play(); setIsPaused(false); }
+    });
+    navigator.mediaSession.setActionHandler("pause", () => {
+      if (audioRef) { audioRef.pause(); setIsPaused(true); }
+    });
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+      if (currentSong.prev != null) setCurrentSong(currentSong.prev);
+    });
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+      setCurrentSong(currentSong.next != null ? currentSong.next : songList.head);
+    });
+    navigator.mediaSession.setActionHandler("seekto", (details) => {
+      if (audioRef && details.seekTime != null) audioRef.currentTime = details.seekTime;
+    });
+
+    return () => {
+      ["play", "pause", "previoustrack", "nexttrack", "seekto"].forEach((action) => {
+        try { navigator.mediaSession.setActionHandler(action, null); } catch (e) {}
+      });
+    };
+  }, [currentSong, audioRef, songList, setCurrentSong, setIsPaused]);
+
+  useEffect(() => {
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = isPaused ? "paused" : "playing";
+    }
+  }, [isPaused]);
+
+
   if (currentSong == null) {
     return null;
   }
